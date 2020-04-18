@@ -1,14 +1,49 @@
-import json
 import base64
-import pandas as pd
+import json
 import dash
 import dash_core_components as dcc
-from dash.dependencies import Output, Input, State
-from src.app import app
-from src import chat_parser
-from src import charts
+import dash_html_components as html
+import pandas as pd
+from dash.dependencies import Input, Output, State
+from src import charts, chat_parser, layouts
 
+EXTERNAL_STYLESHEETS = ['https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css']
 FROM_LANDING_PAGE = '?from=landing_page'
+
+app = dash.Dash(__name__, external_stylesheets=EXTERNAL_STYLESHEETS)
+server = app.server
+app.config.suppress_callback_exceptions = True
+
+
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content',
+        style={
+            'padding': '20px'
+        }),
+    html.Div(id='container-data-store', style={'display': 'none'}, children=[
+        dcc.Store(id='data-store')])
+])
+
+@app.callback([Output('page-content', 'children'), Output('container-data-store', 'children')], [Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == '/':
+        return layouts.home, dash.no_update
+    elif pathname.startswith('/groupchat/') or pathname.startswith('/personalchat/'):
+        chat_type, url_key = pathname[1:].split('/')
+        page_content = layouts.groupchat if chat_type == 'groupchat' else None
+        container_data_store = dash.no_update
+        if pathname.endswith(FROM_LANDING_PAGE):
+            container_data_store = dash.no_update
+        else:
+            url, datasets = chat_parser.load_parsed_data(url_key, 'url')
+            container_data_store = dcc.Store(id='data-store', data=datasets)
+            if url == 'not_found':
+                page_content = layouts.not_found
+                container_data_store = dash.no_update
+        return page_content, container_data_store
+    else:
+        return layouts.page_404, dash.no_update
 
 @app.callback(
     [Output('url', 'pathname'), Output('data-store', 'data')],
@@ -61,3 +96,6 @@ def update_filter(dropdown_users, interval, datasets):
     df = pd.read_json(json.loads(datasets)['data'], orient='split')
     filtered_df = df[((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0))]
     return filtered_df.groupby('day').size(), charts.chart1(filtered_df, interval), charts.chart2(filtered_df), charts.chart3(filtered_df), charts.chart4(filtered_df)
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
