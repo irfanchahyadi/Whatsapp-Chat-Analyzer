@@ -5,37 +5,39 @@ import dash_bootstrap_components as dbc
 
 home = html.Div([
     html.H1('Landing Page'),
-    dcc.Link('visualize', href='/groupchat/asdf?abcd'),
-    html.Div(className='input-group',
-        children=[
-            dcc.Input(id='url-input',
-                placeholder='Enter your last url key',
-                type='text',
-                maxLength=10,
-                value='',
-                className='form-control'),
-            html.Button(id='url-submit', children='Submit', className='btn btn-primary')]),
-    html.Div(
-        children=[
-            'Save: ',
-            daq.BooleanSwitch(id='save-switch', on=True,
-                style={
-                    'display': 'inline-block'})],
-        style={
-            'display': 'inline-block',
-            'float': 'right'
-        }),
-    html.Div(
-        dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
-            style={
-                'width': '100%',
-                'height': '60px',
-                'lineHeight': '60px',
-                'borderWidth': '1px',
-                'borderStyle': 'dashed',
-                'borderRadius': '5px',
-                'textAlign': 'center'},
-            multiple=False)),
+    dcc.Link('DEMO', href='/groupchat/DEMO'),
+    dbc.Card(
+        dbc.CardBody([
+            html.H5('Show your saved chat'),
+            html.Div(className='input-group',
+                children=[
+                    dcc.Input(id='url-input',
+                        placeholder='Enter your last url key',
+                        type='text',
+                        maxLength=10,
+                        value='',
+                        className='form-control'),
+                    html.Button(id='url-submit', children='Submit', className='btn btn-primary')])])),
+    dbc.Card(
+        dbc.CardBody([
+            html.H5('Upload and Analyze your chat'),
+            dbc.Col([
+                dbc.Row([
+                    html.Div([
+                        'Save: ',
+                        daq.BooleanSwitch(id='save-switch', on=True, style={'display': 'inline-block', 'margin-right': '10px'})])],
+                    style={'display': 'block', 'text-align': 'end'}),
+                html.Div(
+                    dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
+                        style={
+                            'width': '100%',
+                            'height': '200px',
+                            'lineHeight': '200px',
+                            'borderWidth': '3px',
+                            'borderStyle': 'dashed',
+                            'borderRadius': '10px',
+                            'textAlign': 'center'},
+                        multiple=False))])])),
     dbc.Alert('hello world', duration=1000, fade=True, style={'position': 'fixed', 'width': '100%', 'top': '0px', 'left': '0px'}),
 ])
 
@@ -56,11 +58,12 @@ groupchat = html.Div([
                 html.H3('Time Series Chat', className='card-title'),
                 dcc.RadioItems(id='time-interval',
                     options=[
-                        {'label': 'Yearly', 'value': 'year'},
-                        {'label': 'Monthly', 'value': 'month'},
-                        {'label': 'Weekly', 'value': 'week'},
-                        {'label': 'Daily', 'value': 'date'}],
-                    value='date'),
+                        {'label': 'Yearly  ', 'value': 'year'},
+                        {'label': 'Monthly  ', 'value': 'month'},
+                        {'label': 'Weekly  ', 'value': 'week'},
+                        {'label': 'Daily  ', 'value': 'date'}],
+                    value='date',
+                    inputStyle={'margin-left': '7px'}),
                 dcc.Graph(id='chart-1', figure={})]))),
     html.Div(
         dbc.Card(

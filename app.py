@@ -18,7 +18,7 @@ app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content',
         style={
-            'padding': '50px'
+            # 'padding': '50px'
         }),
     html.Div(id='container-data-store', style={'display': 'none'}, children=[
         dcc.Store(id='data-store')])

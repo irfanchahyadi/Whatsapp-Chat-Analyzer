@@ -10,7 +10,7 @@ def chart1(df, interval):
             'height': 300,
             'showlegend': True,
             'legend': {'x': '1', 'y': '1', 'xanchor': 'right', 'orientation': 'h'},
-            'margin': {'l': 30, 'r': 30, 't': 0, 'b': 30}}}
+            'margin': {'l': 30, 'r': 30, 't': 10, 'b': 30}}}
 
 def chart2(df):
     pivoted = df.groupby('day').size()
@@ -23,7 +23,7 @@ def chart2(df):
         'layout': {
             # 'title': 'Daily Chat Frequency',
             'height': 300,
-            'margin': {'l': 60, 'r': 60, 't': 30, 'b': 30},
+            'margin': {'l': 50, 'r': 60, 't': 30, 'b': 30},
             'polar': {
                 'radialaxis': {'range': [0, max(pivoted)*1.1], 'nticks': 7, 'angle': 90, 'tickangle': 90},
                 'angularaxis': {'rotation': 90, 'direction': 'clockwise'}}}}
@@ -39,7 +39,7 @@ def chart3(df):
         'layout': {
             'title': 'Chat Frequency per Hour',
             'height': 170,
-            'margin': {'l': 30, 'r': 100, 't': 30, 'b': 30},
+            'margin': {'l': 0, 'r': 100, 't': 30, 'b': 30},
             'yaxis': {'nticks': 7, 'side': 'right'},
             'xaxis': {'visible': False}}}
 
@@ -55,6 +55,6 @@ def chart4(df):
         'layout': {
             # 'title': 'Heatmap Chat Activity',
             'height': 220,
-            'margin': {'l': 30, 'r': 100, 't': 0, 'b': 60},
+            'margin': {'l': 0, 'r': 100, 't': 0, 'b': 60},
             'yaxis': {'side': 'right'}}
     }
