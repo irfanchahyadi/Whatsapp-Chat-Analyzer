@@ -1,16 +1,15 @@
-import base64
-import json
+import base64, json
+import pandas as pd
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import pandas as pd
 from dash.dependencies import Input, Output, State
+import dash_bootstrap_components as dbc
 from src import charts, chat_parser, layouts
 
-EXTERNAL_STYLESHEETS = ['https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css']
 FROM_LANDING_PAGE = '?from=landing_page'
 
-app = dash.Dash(__name__, external_stylesheets=EXTERNAL_STYLESHEETS)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 server = app.server
 app.config.suppress_callback_exceptions = True
 
@@ -19,7 +18,7 @@ app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content',
         style={
-            'padding': '20px'
+            'padding': '50px'
         }),
     html.Div(id='container-data-store', style={'display': 'none'}, children=[
         dcc.Store(id='data-store')])
@@ -90,12 +89,18 @@ def update_dropdown_users(select_all, dropdown_users):
 
 @app.callback(
     [Output('counter', 'children'), Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'), Output('chart-4', 'figure')],
-    [Input('dropdown_users', 'value'), Input('time-interval', 'value')], 
+    [Input('dropdown_users', 'value'), Input('time-interval', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, interval, datasets):
     df = pd.read_json(json.loads(datasets)['data'], orient='split')
     filtered_df = df[((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0))]
-    return filtered_df.groupby('day').size(), charts.chart1(filtered_df, interval), charts.chart2(filtered_df), charts.chart3(filtered_df), charts.chart4(filtered_df)
+    output = [
+        filtered_df.groupby('day').size(),
+        charts.chart1(filtered_df, interval),
+        charts.chart2(filtered_df),
+        charts.chart3(filtered_df),
+        charts.chart4(filtered_df)]
+    return output
 
 if __name__ == "__main__":
     app.run_server(debug=True)

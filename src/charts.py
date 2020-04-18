@@ -6,10 +6,11 @@ def chart1(df, interval):
     return {
         'data': [{'x': pivoted[interval], 'y': pivoted[category], 'type': 'bar', 'name': category} for category in sorted(pivoted.columns)[::-1] if category != interval],
         'layout': {
-            'title': 'Dash Data Visualization',
             'barmode': 'stack',
+            'height': 300,
             'showlegend': True,
-            'legend': {'x': '1', 'y': '1', 'xanchor': 'right', 'orientation': 'h'}}}
+            'legend': {'x': '1', 'y': '1', 'xanchor': 'right', 'orientation': 'h'},
+            'margin': {'l': 30, 'r': 30, 't': 0, 'b': 30}}}
 
 def chart2(df):
     pivoted = df.groupby('day').size()
@@ -20,6 +21,9 @@ def chart2(df):
             'theta': DAYS,
             'fill': 'toself'}],
         'layout': {
+            # 'title': 'Daily Chat Frequency',
+            'height': 300,
+            'margin': {'l': 60, 'r': 60, 't': 30, 'b': 30},
             'polar': {
                 'radialaxis': {'range': [0, max(pivoted)*1.1], 'nticks': 7, 'angle': 90, 'tickangle': 90},
                 'angularaxis': {'rotation': 90, 'direction': 'clockwise'}}}}
@@ -31,7 +35,13 @@ def chart3(df):
             'type': 'scatter',
             'x': HOURS,
             'y': [pivoted.get(i, default=0) for i in HOURS],
-            'line': {'width': 5}}]}
+            'line': {'width': 3}}],
+        'layout': {
+            'title': 'Chat Frequency per Hour',
+            'height': 170,
+            'margin': {'l': 30, 'r': 100, 't': 30, 'b': 30},
+            'yaxis': {'nticks': 7, 'side': 'right'},
+            'xaxis': {'visible': False}}}
 
 def chart4(df):
     pivoted = df[['day', 'hour']].pivot_table(index='day', columns='hour', aggfunc=len, fill_value=0)
@@ -40,6 +50,11 @@ def chart4(df):
             'type': 'heatmap',
             'z': [[pivoted.loc[i, j] if j in pivoted.columns else 0 for j in HOURS] if i in pivoted.index else [0]*24 for i in DAYS[::-1]],
             'x': HOURS,
-            'y': DAYS[::-1]
-        }]
+            'y': DAYS[::-1],
+            'showscale': False}],
+        'layout': {
+            # 'title': 'Heatmap Chat Activity',
+            'height': 220,
+            'margin': {'l': 30, 'r': 100, 't': 0, 'b': 60},
+            'yaxis': {'side': 'right'}}
     }
