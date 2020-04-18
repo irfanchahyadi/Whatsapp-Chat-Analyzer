@@ -14,7 +14,7 @@ app.layout = html.Div([
             'padding': '20px'
         }),
     html.Div(id='container-data-store', style={'display': 'none'}, children=[
-        html.Div(id='data-store', style={'display': 'none'})])
+        dcc.Store(id='data-store')])
 ])
 
 @app.callback([Output('page-content', 'children'), Output('container-data-store', 'children')], [Input('url', 'pathname')])
@@ -29,7 +29,7 @@ def display_page(pathname):
             container_data_store = dash.no_update
         else:
             url, datasets = chat_parser.load_parsed_data(url_key, 'url')
-            container_data_store = html.Div(id='data-store', style={'display': 'none'}, children=datasets)
+            container_data_store = dcc.Store(id='data-store', data=datasets)
             if url == 'not_found':
                 page_content = layouts.not_found
                 container_data_store = dash.no_update

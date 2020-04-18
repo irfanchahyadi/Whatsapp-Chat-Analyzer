@@ -11,7 +11,7 @@ from src import charts
 FROM_LANDING_PAGE = '?from=landing_page'
 
 @app.callback(
-    [Output('url', 'pathname'), Output('data-store', 'children')],
+    [Output('url', 'pathname'), Output('data-store', 'data')],
     [Input('upload-data', 'contents'), Input('url-submit', 'n_clicks')],
     [State('save-switch', 'on'), State('url-input', 'value')])
 def upload_data(contents, n_click, save, url_input):
@@ -30,7 +30,7 @@ def upload_data(contents, n_click, save, url_input):
             url = url + FROM_LANDING_PAGE
     return url, datasets
 
-@app.callback(Output('dropdown_users', 'options'), [Input('dropdown_users', 'value')], [State('data-store', 'children')])
+@app.callback(Output('dropdown_users', 'options'), [Input('dropdown_users', 'value')], [State('data-store', 'data')])
 def fill_dropdown_users(dropdown_users, datasets):
     users = json.loads(datasets)['users']
     dropdown_users_options = [{'label': i, 'value': i} for i in users]
@@ -56,7 +56,7 @@ def update_dropdown_users(select_all, dropdown_users):
 @app.callback(
     [Output('counter', 'children'), Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'), Output('chart-4', 'figure')],
     [Input('dropdown_users', 'value'), Input('time-interval', 'value')], 
-    [State('data-store', 'children')])
+    [State('data-store', 'data')])
 def update_filter(dropdown_users, interval, datasets):
     df = pd.read_json(json.loads(datasets)['data'], orient='split')
     filtered_df = df[((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0))]
