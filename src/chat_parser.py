@@ -13,8 +13,8 @@ RE_LOCATION = f'(?:live location shared|(?:location:\s{RE_LINK}))'
 RE_CONTACT = '^.+\.(vcf \(file attached\))'
 RE_EVENTS = [
     '^(Messages to this group are now secured with end-to-end encryption.)\s.+',
-    '(.+)\s(created group)\s.+',
-    '(.+)\s(changed the subject)\s.+',
+    '(.+)\s(created group)\s"(.+)"',
+    '(.+)\s(changed the subject)\s.+to\s"(.+)"',
     "(.+)\s(changed this group's icon)",
     '(.+)\s(added)\s(.+)',
     '(.+)\s(changed their phone number)\s.+',
@@ -93,12 +93,12 @@ def extract_event(text):
         if match:
             matchs = match.groups()
             if len(matchs) == 3:
-                contact, message, contact2 = matchs
+                contact, message, target = matchs
             elif len(matchs) == 2:
-                contact, message, contact2 = matchs[0], matchs[1], ''
+                contact, message, target = matchs[0], matchs[1], ''
             else:
-                contact, message, contact2 = '', matchs[0], ''
-            return contact, message, contact2
+                contact, message, target = '', matchs[0], ''
+            return contact, message, target
     return '', text, ''
 
 def enrich(df):
@@ -122,8 +122,8 @@ def enrich(df):
     df['count_newline'] = df.message.str.count('\n')
     df['category'] = df[['contact', 'message']].apply(get_category, axis=1)
     df['is_message'] = df.category == 'Message'
-    df['contact2'] = np.nan
-    df.loc[df.category == 'Event', 'contact'], df.loc[df.category == 'Event', 'message'], df.loc[df.category == 'Event', 'contact2'], = zip(*df[df.category == 'Event'].message.apply(extract_event))
+    df['target'] = np.nan
+    df.loc[df.category == 'Event', 'contact'], df.loc[df.category == 'Event', 'message'], df.loc[df.category == 'Event', 'target'], = zip(*df[df.category == 'Event'].message.apply(extract_event))
     return df
 
 def parse(chat, save=True):
@@ -171,12 +171,16 @@ def load_parsed_data(input_string, input_type, save=True):
     df = enrich(df)
     # TODO: support for both private & group chat
     group_created = df[(df.category == 'Event') & (df.message == 'created group')]
-    df = df.drop(group_created.index)
-    group_created = [group_created['contact'], group_created['datetime']]
+    chat_name = df[(df.category == 'Event') & (df.message.isin(['created group', 'changed the subject']))].tail(1)['target']
     users = sorted(filter(lambda x: len(x) > 0, df.contact.unique().tolist()))
+    df = df.drop(group_created.index)
     df = df.drop(['message', 'clean_message'], axis=1)
     datasets = {
         'data': df.to_json(date_format='iso', orient='split'),
-        'users': users
+        'users': users,
+        'chat_name': chat_name.values[0],
+        'chat_created_by': group_created['contact'].values[0],
+        'chat_created_at': json.dumps(group_created['datetime'].values[0], indent=4, sort_keys=True, default=str)
     }
+    # TODO: create method to check Series.values is empty, to avoid IndexError: index 0 is out of bounds for axis 0 with size 0
     return '/groupchat/' + url, json.dumps(datasets)

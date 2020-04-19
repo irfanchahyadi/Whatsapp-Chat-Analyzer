@@ -3,6 +3,8 @@ import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 
+LOGO = '/assets/logo.png'
+
 home = html.Div([
     html.H1('Landing Page'),
     dcc.Link('DEMO', href='/groupchat/DEMO'),
@@ -25,7 +27,7 @@ home = html.Div([
                 dbc.Row([
                     html.Div([
                         'Save: ',
-                        daq.BooleanSwitch(id='save-switch', on=True, style={'display': 'inline-block', 'margin-right': '10px'})])],
+                        daq.BooleanSwitch(id='save-switch', on=True, color='#29b6f6', style={'display': 'inline-block', 'margin-right': '10px'})])],
                     style={'display': 'block', 'text-align': 'end'}),
                 html.Div(
                     dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
@@ -42,6 +44,19 @@ home = html.Div([
 ])
 
 groupchat = html.Div([
+    html.Header([
+        dbc.Navbar([
+            dbc.Row([
+                dbc.Col(html.Img(src=LOGO, height="30px")),
+                dbc.Col(dbc.NavbarBrand("Navbar", id='navbar-brand', className="ml-2"), style={'margin-left': '10px'})],
+                align="center",
+                no_gutters=True),
+            dbc.NavbarToggler(id="navbar-toggler")],
+        color='dark',
+        # dark=True,
+        fixed='top',
+        style={'height': '50px'})
+    ]),
     html.H1('Page Visualize'),
     html.A('home', href='/'),
     html.Div(

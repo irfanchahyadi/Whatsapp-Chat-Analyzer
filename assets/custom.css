@@ -9,3 +9,7 @@ body {
     margin: 20px;
     padding: 10px;
 }
+
+.navbar-light .navbar-brand {
+    color: #f2f2f2;
+}

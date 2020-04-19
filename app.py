@@ -20,8 +20,9 @@ app.layout = html.Div([
         style={
             # 'padding': '50px'
         }),
-    html.Div(id='container-data-store', style={'display': 'none'}, children=[
-        dcc.Store(id='data-store')])
+    dcc.Loading(type='graph', fullscreen=True, children=[
+        html.Div(id='container-data-store', style={'display': 'none'}, children=[
+            dcc.Store(id='data-store')])])
 ])
 
 @app.callback([Output('page-content', 'children'), Output('container-data-store', 'children')], [Input('url', 'pathname')])
