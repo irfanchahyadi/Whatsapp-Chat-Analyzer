@@ -65,11 +65,13 @@ def upload_data(contents, n_click, save, url_input):
             url = url + FROM_LANDING_PAGE
     return url, datasets
 
-@app.callback(Output('dropdown_users', 'options'), [Input('dropdown_users', 'value')], [State('data-store', 'data')])
+@app.callback([Output('dropdown_users', 'options'), Output('navbar-brand', 'children')], [Input('dropdown_users', 'value')], [State('data-store', 'data')])
 def fill_dropdown_users(dropdown_users, datasets):
-    users = json.loads(datasets)['users']
+    datasets = json.loads(datasets)
+    chat_name = datasets['chat_name']
+    users = datasets['users']
     dropdown_users_options = [{'label': i, 'value': i} for i in users]
-    return dropdown_users_options
+    return dropdown_users_options, chat_name
 
 @app.callback(Output('selectall_users_container', 'children'), [Input('dropdown_users', 'value')], [State('selectall_users', 'value')])
 def update_selectall_users(dropdown_users, select_all):

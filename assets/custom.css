@@ -10,6 +10,14 @@ body {
     padding: 10px;
 }
 
-.navbar-light .navbar-brand {
+.card-body {
+    padding-top: 10px;
+}
+.card-header {
+    padding: 0px;
+    margin-bottom: 10px;
+}
+
+.navbar-light .navbar-brand, .navbar-light .navbar-brand:hover {
     color: #f2f2f2;
 }

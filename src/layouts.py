@@ -47,48 +47,67 @@ groupchat = html.Div([
     html.Header([
         dbc.Navbar([
             dbc.Row([
-                dbc.Col(html.Img(src=LOGO, height="30px")),
-                dbc.Col(dbc.NavbarBrand("Navbar", id='navbar-brand', className="ml-2"), style={'margin-left': '10px'})],
-                align="center",
+                html.A(
+                    dbc.Col(html.Img(src=LOGO, height="30px")), href='/'),
+                dbc.Col(dbc.NavbarBrand(id='navbar-brand', className='ml-2'), style={'margin-left': '10px'})],
+                align='center',
                 no_gutters=True),
             dbc.NavbarToggler(id="navbar-toggler")],
         color='dark',
-        # dark=True,
         fixed='top',
-        style={'height': '50px'})
-    ]),
-    html.H1('Page Visualize'),
-    html.A('home', href='/'),
-    html.Div(
-        children=[
-            html.Div(id='selectall_users_container', children=[
-                dcc.Checklist(id='selectall_users', options=[{'label': 'Select All', 'value': 1}], value=[1])]),
-            html.Div(id='dropdown_users_container', children=[
-                dcc.Dropdown(id='dropdown_users', options=[], multi=True, value=[])])],
-        style={}),
-    
-    html.Div(
-        dbc.Card(
-            dbc.CardBody([
-                html.H3('Time Series Chat', className='card-title'),
-                dcc.RadioItems(id='time-interval',
-                    options=[
-                        {'label': 'Yearly  ', 'value': 'year'},
-                        {'label': 'Monthly  ', 'value': 'month'},
-                        {'label': 'Weekly  ', 'value': 'week'},
-                        {'label': 'Daily  ', 'value': 'date'}],
-                    value='date',
-                    inputStyle={'margin-left': '7px'}),
-                dcc.Graph(id='chart-1', figure={})]))),
-    html.Div(
-        dbc.Card(
-            dbc.CardBody([
-                html.H3('Chat Activity by Day & Hour', className='card-title'),
+        style={'height': '50px'})]),
+
+
+    dbc.Card(
+        dbc.CardBody([
+            html.H3('General Information', className='card-title'),
+            dbc.Col([
                 dbc.Row([
-                    dcc.Graph(id='chart-2', figure={}, className='col-md-4'),
-                    dbc.Col([
-                        dcc.Graph(id='chart-3', figure={}),
-                        dcc.Graph(id='chart-4', figure={})], md=8)])]))),
+                    dbc.Card([dbc.CardHeader(html.H6('Created by'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Users'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Messages'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Words'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Media'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Emoji'))]),
+                ], justify='around'),
+                dbc.Row([
+                    dbc.Card([dbc.CardHeader(html.H6('Contact'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Location'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Link'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Event'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Deleted'))]),
+                    dbc.Card([dbc.CardHeader(html.H6('Left'))]),
+                ], justify='around')
+            ])
+            ])),
+    dbc.Row([
+        dbc.Col(
+            html.Div(id='selectall_users_container', children=[
+                dcc.Checklist(id='selectall_users', options=[{'label': 'Select All', 'value': 1}], value=[1])]), className='col-md-1'),
+        dbc.Col(
+            html.Div(id='dropdown_users_container', children=[
+                dcc.Dropdown(id='dropdown_users', options=[], multi=True, value=[])]), className='col-md-11')], align='center'),
+
+    dbc.Card(
+        dbc.CardBody([
+            dbc.CardHeader(html.H4('Time Series Chat')),
+            dcc.RadioItems(id='time-interval',
+                options=[
+                    {'label': 'Yearly  ', 'value': 'year'},
+                    {'label': 'Monthly  ', 'value': 'month'},
+                    {'label': 'Weekly  ', 'value': 'week'},
+                    {'label': 'Daily  ', 'value': 'date'}],
+                value='date',
+                inputStyle={'margin-left': '7px'}),
+            dcc.Graph(id='chart-1', figure={})])),
+    dbc.Card(
+        dbc.CardBody([
+            dbc.CardHeader(html.H4('Chat Activity by Day & Hour')),
+            dbc.Row([
+                dcc.Graph(id='chart-2', figure={}, className='col-md-4'),
+                dbc.Col([
+                    dcc.Graph(id='chart-3', figure={}),
+                    dcc.Graph(id='chart-4', figure={})], md=8)])])),
     html.Div(id='counter')
 ])
 
