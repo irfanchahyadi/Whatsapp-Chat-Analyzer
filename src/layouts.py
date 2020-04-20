@@ -58,28 +58,19 @@ groupchat = html.Div([
         style={'height': '50px'})]),
 
 
-    dbc.Card(
-        dbc.CardBody([
-            html.H3('General Information', className='card-title'),
-            dbc.Col([
-                dbc.Row([
-                    dbc.Card([dbc.CardHeader(html.H6('Created by'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Users'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Messages'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Words'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Media'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Emoji'))]),
-                ], justify='around'),
-                dbc.Row([
-                    dbc.Card([dbc.CardHeader(html.H6('Contact'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Location'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Link'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Event'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Deleted'))]),
-                    dbc.Card([dbc.CardHeader(html.H6('Left'))]),
-                ], justify='around')
-            ])
-            ])),
+    dbc.Row([
+            dbc.Card([dbc.CardHeader([html.H6('Created by')]), html.Div(id='created-by')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader([html.H6('Users')]), html.Div(id='user-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader([html.H6('Messages')]), html.Div(id='message-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Words')), html.Div(id='word-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Media')), html.Div(id='media-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Emoji')), html.Div(id='emoji-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader([html.H6('Location')]), html.Div(id='location-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Link')), html.Div(id='link-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Deleted')), html.Div(id='deleted-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Left')), html.Div(id='left-count')], className='col-md-2'),
+        ], justify='around'),
+
     dbc.Row([
         dbc.Col(
             html.Div(id='selectall_users_container', children=[

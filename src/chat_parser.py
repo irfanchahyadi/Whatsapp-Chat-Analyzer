@@ -1,6 +1,6 @@
 import re
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
 import numpy as np
 from src import db_handler as db
@@ -9,8 +9,10 @@ RE_EMOJI = '<(?:Emoji)(?:[^>]+)>'
 RE_MEDIA = '<(?:Media)(?:[^>]+)>'
 RE_LINK = '(?:(?:(?:https|http|ftp):\/\/(?:www\.)?)|(?:www\.))\S+\.\S+'
 RE_MENTION = '@\d+'
+# TODO: create re.sub, re.match, re.findall function for multiple regex pattern
 RE_LOCATION = f'(?:live location shared|(?:location:\s{RE_LINK}))'
 RE_CONTACT = '^.+\.(vcf \(file attached\))'
+RE_DELETED = 'This message was deleted'
 RE_EVENTS = [
     '^(Messages to this group are now secured with end-to-end encryption.)\s.+',
     '(.+)\s(created group)\s"(.+)"',
@@ -84,6 +86,8 @@ def get_category(x):
         return 'Location'
     elif re.match(RE_CONTACT, message):
         return 'Contact'
+    elif re.match(RE_DELETED, message):
+        return 'Deleted'
     else:
         return 'Message'
 
@@ -121,9 +125,9 @@ def enrich(df):
     df['count_character'] = df.clean_message.apply(len)
     df['count_newline'] = df.message.str.count('\n')
     df['category'] = df[['contact', 'message']].apply(get_category, axis=1)
-    df['is_message'] = df.category == 'Message'
-    df['target'] = np.nan
-    df.loc[df.category == 'Event', 'contact'], df.loc[df.category == 'Event', 'message'], df.loc[df.category == 'Event', 'target'], = zip(*df[df.category == 'Event'].message.apply(extract_event))
+    df['event_type'] = np.nan
+    df['event_target'] = np.nan
+    df.loc[df.category == 'Event', 'contact'], df.loc[df.category == 'Event', 'event_type'], df.loc[df.category == 'Event', 'event_target'], = zip(*df[df.category == 'Event'].message.apply(extract_event))
     return df
 
 def parse(chat, save=True):
@@ -170,8 +174,8 @@ def load_parsed_data(input_string, input_type, save=True):
         return 'not_found', {'data': ''}
     df = enrich(df)
     # TODO: support for both private & group chat
-    group_created = df[(df.category == 'Event') & (df.message == 'created group')]
-    chat_name = df[(df.category == 'Event') & (df.message.isin(['created group', 'changed the subject']))].tail(1)['target']
+    group_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
+    chat_name = df[(df.category == 'Event') & (df.event_type.isin(['created group', 'changed the subject']))].tail(1)['event_target']
     users = sorted(filter(lambda x: len(x) > 0, df.contact.unique().tolist()))
     df = df.drop(group_created.index)
     df = df.drop(['message', 'clean_message'], axis=1)

@@ -65,13 +65,18 @@ def upload_data(contents, n_click, save, url_input):
             url = url + FROM_LANDING_PAGE
     return url, datasets
 
-@app.callback([Output('dropdown_users', 'options'), Output('navbar-brand', 'children')], [Input('dropdown_users', 'value')], [State('data-store', 'data')])
+@app.callback(
+    [Output('dropdown_users', 'options'), Output('navbar-brand', 'children'), Output('created-by', 'children'), Output('user-count', 'children')],
+    [Input('dropdown_users', 'value')], [State('data-store', 'data')])
 def fill_dropdown_users(dropdown_users, datasets):
     datasets = json.loads(datasets)
-    chat_name = datasets['chat_name']
-    users = datasets['users']
-    dropdown_users_options = [{'label': i, 'value': i} for i in users]
-    return dropdown_users_options, chat_name
+    output = [
+        [{'label': i, 'value': i} for i in datasets['users']],
+        datasets['chat_name'],
+        datasets['chat_created_by'],
+        len(datasets['users'])
+    ]
+    return output
 
 @app.callback(Output('selectall_users_container', 'children'), [Input('dropdown_users', 'value')], [State('selectall_users', 'value')])
 def update_selectall_users(dropdown_users, select_all):
@@ -91,7 +96,8 @@ def update_dropdown_users(select_all, dropdown_users):
         return dash.no_update
 
 @app.callback(
-    [Output('counter', 'children'), Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'), Output('chart-4', 'figure')],
+    [Output('counter', 'children'), Output('message-count', 'children'), Output('word-count', 'children'), Output('media-count', 'children'), Output('emoji-count', 'children'), Output('location-count', 'children'), Output('link-count', 'children'), Output('deleted-count', 'children'), Output('left-count', 'children'),
+     Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'), Output('chart-4', 'figure')],
     [Input('dropdown_users', 'value'), Input('time-interval', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, interval, datasets):
@@ -99,6 +105,14 @@ def update_filter(dropdown_users, interval, datasets):
     filtered_df = df[((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0))]
     output = [
         filtered_df.groupby('day').size(),
+        filtered_df[filtered_df.category != 'Event'].shape[0],
+        filtered_df['count_words'].sum(),
+        filtered_df[filtered_df.category == 'Media'].shape[0],
+        filtered_df['count_emoji'].sum(),
+        filtered_df[filtered_df.category == 'Location'].shape[0],
+        filtered_df['count_link'].sum(),
+        filtered_df[filtered_df.category == 'Deleted'].shape[0],
+        filtered_df[(filtered_df.category == 'Event') & (filtered_df.event_type == 'left')].shape[0],
         charts.chart1(filtered_df, interval),
         charts.chart2(filtered_df),
         charts.chart3(filtered_df),
