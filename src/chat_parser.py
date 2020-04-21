@@ -5,24 +5,26 @@ import pandas as pd
 import numpy as np
 from src import db_handler as db
 
-RE_EMOJI = '<(?:Emoji)(?:[^>]+)>'
-RE_MEDIA = '<(?:Media)(?:[^>]+)>'
-RE_LINK = '(?:(?:(?:https|http|ftp):\/\/(?:www\.)?)|(?:www\.))\S+\.\S+'
-RE_MENTION = '@\d+'
-# TODO: create re.sub, re.match, re.findall function for multiple regex pattern
-RE_LOCATION = f'(?:live location shared|(?:location:\s{RE_LINK}))'
-RE_CONTACT = '^.+\.(vcf \(file attached\))'
-RE_DELETED = 'This message was deleted'
-RE_EVENTS = [
-    '^(Messages to this group are now secured with end-to-end encryption.)\s.+',
-    '(.+)\s(created group)\s"(.+)"',
-    '(.+)\s(changed the subject)\s.+to\s"(.+)"',
-    "(.+)\s(changed this group's icon)",
-    '(.+)\s(added)\s(.+)',
-    '(.+)\s(changed their phone number)\s.+',
-    '(.+)\s(changed to)\s(.+)',
-    '(.+)\s(left)'
-]
+RE_PATTERN = {
+    'universal': {
+        'emoji': '<(?:Emoji)(?:[^>]+)>',
+        'link': '(?:(?:(?:https|http|ftp):\/\/(?:www\.)?)|(?:www\.))\S+\.\S+',
+        'mention': '@\d+'},
+    'en': {
+        'media': '<(?:Media)(?:[^>]+)>',
+        'location': '(?:live location shared|(?:location:\s{}))',
+        'contact': '^.+\.(vcf \(file attached\))',
+        'deleted': '(This message was deleted|You deleted this message)',
+        'events': [
+            '^(Messages to this group are now secured with end-to-end encryption.)\s.+',
+            "^(You're now an admin)",
+            '(.+)\s(created group)\s"(.+)"',
+            '(.+)\s(changed the subject)\s.+to\s"(.+)"',
+            "(.+)\s(changed this group's icon)",
+            '(.+)\s(added)\s(.+)',
+            '(.+)\s(changed their phone number)\s.+',
+            '(.+)\s(changed to)\s(.+)',
+            '(.+)\s(left)']}}
 
 def replace_emoji(text, emoji):
     """Convert unicode character of emoji into string representation."""
@@ -53,22 +55,30 @@ def convert_to_re_pattern(pattern):
         i += 1
     return re_pattern
 
-def clean_message(text):
-    """Remove newline, emoji, and media from message."""
-    text = text.replace('\n', ' ')
-    text = re.sub(RE_LOCATION, '', text)
-    text = re.sub(RE_EMOJI, '', text)
-    text = re.sub(RE_MEDIA, '', text)
-    text = re.sub(RE_LINK, '', text)
-    text = re.sub(RE_MENTION, '', text)
-    text = re.sub(RE_CONTACT, '', text)
-    return text
+def get_language(df):
+    first_message = df.loc[0, 'message']
+    for lang in list(RE_PATTERN.keys())[1:]:
+        if re.match(RE_PATTERN[lang]['events'][0], first_message):
+            return lang
 
-def find_link(text):
+def clean_message(x):
+    """Remove newline, emoji, and media from message."""
+    category, message = x
+    if category == 'Message':
+        message = message.replace('\n', ' ')
+        message = re.sub(RE_PATTERN['universal']['emoji'], '', message)
+        message = re.sub(RE_PATTERN['universal']['link'], '', message)
+        message = re.sub(RE_PATTERN['universal']['mention'], '', message)
+    else:
+        message = ''
+    return message
+
+def find_link(x):
     """Find links from message."""
+    category, message = x
     list_link = []
-    if len(re.findall(RE_LOCATION, text)) == 0:
-        for link in re.findall(RE_LINK, text):
+    if category == 'Message':
+        for link in re.findall(RE_PATTERN['universal']['link'], message):
             if link[-1] in ['.', ',']:
                 temp = link[:-1]
             else:
@@ -76,23 +86,23 @@ def find_link(text):
             list_link.append(temp)
     return list_link
 
-def get_category(x):
+def get_category(x, lang):
     contact, message = x
     if contact == '':
         return 'Event'
-    elif re.match(RE_MEDIA, message):
+    elif re.match(RE_PATTERN[lang]['media'], message):
         return 'Media'
-    elif re.match(RE_LOCATION, message):
+    elif re.match(RE_PATTERN[lang]['location'].format(RE_PATTERN['universal']['link']), message):
         return 'Location'
-    elif re.match(RE_CONTACT, message):
+    elif re.match(RE_PATTERN[lang]['contact'], message):
         return 'Contact'
-    elif re.match(RE_DELETED, message):
+    elif re.match(RE_PATTERN[lang]['deleted'], message):
         return 'Deleted'
     else:
         return 'Message'
 
-def extract_event(text):
-    for event in RE_EVENTS:
+def extract_event(text, lang):
+    for event in RE_PATTERN[lang]['events']:
         match = re.match(event, text)
         if match:
             matchs = match.groups()
@@ -107,16 +117,18 @@ def extract_event(text):
 
 def enrich(df):
     """Adding some column for analysis."""
-    df['clean_message'] = df.message.apply(clean_message)
+    lang = get_language(df)
+    df['category'] = df[['contact', 'message']].apply(lambda x: get_category(x, lang), axis=1)
+    df['clean_message'] = df[['category', 'message']].apply(clean_message, axis=1)
     df['date'] = df.datetime.dt.date
     df['year'] = df.date + pd.offsets.YearEnd(0)
     df['month'] = df.date + pd.offsets.MonthEnd(0)
     df['week'] = df.date + pd.offsets.Week(weekday=6)
     df['day'] = pd.Categorical(df.datetime.dt.strftime('%A'))
     df['hour'] = pd.Categorical(df.datetime.apply(lambda x: x.strftime('%H:00')))
-    df['list_emoji'] = df.message.apply(lambda x: re.findall(RE_EMOJI, x))
-    df['list_link'] = df.message.apply(find_link)
-    df['list_mention'] = df.message.apply(lambda x: re.findall(RE_MENTION, x))
+    df['list_emoji'] = df.message.apply(lambda x: re.findall(RE_PATTERN['universal']['emoji'], x))
+    df['list_link'] = df[['category', 'message']].apply(find_link, axis=1)
+    df['list_mention'] = df.message.apply(lambda x: re.findall(RE_PATTERN['universal']['mention'], x))
     df['list_words'] = df.clean_message.apply(lambda x: re.findall('\w+', x))
     df['count_emoji'] = df.list_emoji.apply(len)
     df['count_link'] = df.list_link.apply(len)
@@ -124,10 +136,9 @@ def enrich(df):
     df['count_words'] = df.list_words.apply(len)
     df['count_character'] = df.clean_message.apply(len)
     df['count_newline'] = df.message.str.count('\n')
-    df['category'] = df[['contact', 'message']].apply(get_category, axis=1)
     df['event_type'] = np.nan
     df['event_target'] = np.nan
-    df.loc[df.category == 'Event', 'contact'], df.loc[df.category == 'Event', 'event_type'], df.loc[df.category == 'Event', 'event_target'], = zip(*df[df.category == 'Event'].message.apply(extract_event))
+    df.loc[df.category == 'Event', 'contact'], df.loc[df.category == 'Event', 'event_type'], df.loc[df.category == 'Event', 'event_target'], = zip(*df[df.category == 'Event'].message.apply(lambda x: extract_event(x, lang)))
     return df
 
 def parse(chat, save=True):
