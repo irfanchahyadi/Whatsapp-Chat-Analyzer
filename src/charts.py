@@ -21,7 +21,6 @@ def chart2(df):
             'theta': DAYS,
             'fill': 'toself'}],
         'layout': {
-            # 'title': 'Daily Chat Frequency',
             'height': 300,
             'margin': {'l': 50, 'r': 60, 't': 30, 'b': 30},
             'polar': {
@@ -37,9 +36,8 @@ def chart3(df):
             'y': [pivoted.get(i, default=0) for i in HOURS],
             'line': {'width': 3}}],
         'layout': {
-            'title': 'Chat Frequency per Hour',
-            'height': 170,
-            'margin': {'l': 0, 'r': 100, 't': 30, 'b': 30},
+            'height': 150,
+            'margin': {'l': 0, 'r': 70, 't': 0, 'b': 30},
             'yaxis': {'nticks': 7, 'side': 'right'},
             'xaxis': {'visible': False}}}
 
@@ -53,8 +51,8 @@ def chart4(df):
             'y': DAYS[::-1],
             'showscale': False}],
         'layout': {
-            # 'title': 'Heatmap Chat Activity',
-            'height': 220,
-            'margin': {'l': 0, 'r': 100, 't': 0, 'b': 60},
-            'yaxis': {'side': 'right'}}
+            'height': 190,
+            'margin': {'l': 0, 'r': 70, 't': 0, 'b': 50},
+            'yaxis': {'side': 'right'},
+            'xaxis': {'tickangle': 45}}
     }

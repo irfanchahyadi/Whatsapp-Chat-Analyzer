@@ -91,14 +91,19 @@ groupchat = html.Div([
                 value='date',
                 inputStyle={'margin-left': '7px'}),
             dcc.Graph(id='chart-1', figure={})])),
-    dbc.Card(
-        dbc.CardBody([
-            dbc.CardHeader(html.H4('Chat Activity by Day & Hour')),
-            dbc.Row([
-                dcc.Graph(id='chart-2', figure={}, className='col-md-4'),
+    dbc.Row([
+        dbc.Card(
+            dbc.CardBody([
+                dbc.CardHeader(html.H4('Daily Chat Activity')),
+                    dcc.Graph(id='chart-2', figure={}),
+                    ]), className='col-md-4'),
+        dbc.Card(
+            dbc.CardBody([
+                dbc.CardHeader(html.H4('Chat Activity by Hour')),
                 dbc.Col([
                     dcc.Graph(id='chart-3', figure={}),
-                    dcc.Graph(id='chart-4', figure={})], md=8)])])),
+                    dcc.Graph(id='chart-4', figure={})])]), className='col')
+    ]),
     html.Div(id='counter')
 ])
 

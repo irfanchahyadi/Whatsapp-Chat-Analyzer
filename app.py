@@ -97,7 +97,7 @@ def update_dropdown_users(select_all, dropdown_users):
         return dash.no_update
 
 @app.callback(
-    [Output('counter', 'children'), Output('message-count', 'children'), Output('word-count', 'children'), Output('emoji-count', 'children'), Output('mention-count', 'children'), 
+    [Output('counter', 'children'), Output('message-count', 'children'), Output('word-count', 'children'), Output('emoji-count', 'children'), Output('mention-count', 'children'),
      Output('media-count', 'children'), Output('location-count', 'children'), Output('link-count', 'children'), Output('contact-count', 'children'),
      Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'), Output('chart-4', 'figure')],
     [Input('dropdown_users', 'value'), Input('time-interval', 'value')],

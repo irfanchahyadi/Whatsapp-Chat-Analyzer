@@ -21,3 +21,8 @@ body {
 .navbar-light .navbar-brand, .navbar-light .navbar-brand:hover {
     color: #f2f2f2;
 }
+
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
