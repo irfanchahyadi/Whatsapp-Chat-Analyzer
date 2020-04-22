@@ -70,11 +70,12 @@ def upload_data(contents, n_click, save, url_input):
     [Input('dropdown_users', 'value')], [State('data-store', 'data')])
 def fill_dropdown_users(dropdown_users, datasets):
     datasets = json.loads(datasets)
+    df = pd.read_json(datasets['data'], orient='split')
     output = [
         [{'label': i, 'value': i} for i in datasets['users']],
         datasets['chat_name'],
-        datasets['chat_created_by'],
-        len(datasets['users'])
+        '{} at {}'.format(datasets['chat_created_by'], datasets['chat_created_at']),
+        '{:,} active, {:,} left group'.format(len(datasets['users']), df[(df.category == 'Event') & (df.event_type == 'left')].shape[0])
     ]
     return output
 
@@ -96,23 +97,26 @@ def update_dropdown_users(select_all, dropdown_users):
         return dash.no_update
 
 @app.callback(
-    [Output('counter', 'children'), Output('message-count', 'children'), Output('word-count', 'children'), Output('media-count', 'children'), Output('emoji-count', 'children'), Output('location-count', 'children'), Output('link-count', 'children'), Output('deleted-count', 'children'), Output('left-count', 'children'),
+    [Output('counter', 'children'), Output('message-count', 'children'), Output('word-count', 'children'), Output('emoji-count', 'children'), Output('mention-count', 'children'), 
+     Output('media-count', 'children'), Output('location-count', 'children'), Output('link-count', 'children'), Output('contact-count', 'children'),
      Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'), Output('chart-4', 'figure')],
     [Input('dropdown_users', 'value'), Input('time-interval', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, interval, datasets):
     df = pd.read_json(json.loads(datasets)['data'], orient='split')
     filtered_df = df[((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0))]
+    by_category = filtered_df.groupby('category').size()
+    by_column = filtered_df.sum(numeric_only=True)
     output = [
         filtered_df.groupby('day').size(),
-        filtered_df[filtered_df.category != 'Event'].shape[0],
-        filtered_df['count_words'].sum(),
-        filtered_df[filtered_df.category == 'Media'].shape[0],
-        filtered_df['count_emoji'].sum(),
-        filtered_df[filtered_df.category == 'Location'].shape[0],
-        filtered_df['count_link'].sum(),
-        filtered_df[filtered_df.category == 'Deleted'].shape[0],
-        filtered_df[(filtered_df.category == 'Event') & (filtered_df.event_type == 'left')].shape[0],
+        '{:,} sent, {:,} deleted'.format(by_category.sum() - by_category.get('Event', default=0), by_category.get('Deleted', default=0)),
+        '{:,} sent'.format(by_column['count_words']),
+        '{:,} sent'.format(by_column['count_emoji']),
+        '{:,} sent'.format(by_column['count_mention']),
+        '{:,} shared'.format(by_category.get('Media', default=0)),
+        '{:,} shared'.format(by_category.get('Location', default=0)),
+        '{:,} shared'.format(by_column['count_link']),
+        '{:,} shared'.format(by_category.get('Contact', default=0)),
         charts.chart1(filtered_df, interval),
         charts.chart2(filtered_df),
         charts.chart3(filtered_df),

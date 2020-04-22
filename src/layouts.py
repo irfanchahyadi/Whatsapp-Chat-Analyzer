@@ -59,16 +59,16 @@ groupchat = html.Div([
 
 
     dbc.Row([
-            dbc.Card([dbc.CardHeader([html.H6('Created by')]), html.Div(id='created-by')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader([html.H6('Users')]), html.Div(id='user-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader([html.H6('Created by')]), html.Div(id='created-by')], className='col-md-3'),
             dbc.Card([dbc.CardHeader([html.H6('Messages')]), html.Div(id='message-count')], className='col-md-2'),
             dbc.Card([dbc.CardHeader(html.H6('Words')), html.Div(id='word-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Media')), html.Div(id='media-count')], className='col-md-2'),
             dbc.Card([dbc.CardHeader(html.H6('Emoji')), html.Div(id='emoji-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Mentions')), html.Div(id='mention-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Media')), html.Div(id='media-count')], className='col-md-2'),
             dbc.Card([dbc.CardHeader([html.H6('Location')]), html.Div(id='location-count')], className='col-md-2'),
             dbc.Card([dbc.CardHeader(html.H6('Link')), html.Div(id='link-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Deleted')), html.Div(id='deleted-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Left')), html.Div(id='left-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader([html.H6('Contact')]), html.Div(id='contact-count')], className='col-md-2'),
+            dbc.Card([dbc.CardHeader(html.H6('Users')), html.Div(id='user-count')], className='col-md-3'),
         ], justify='around'),
 
     dbc.Row([
