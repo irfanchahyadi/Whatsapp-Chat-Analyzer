@@ -11,18 +11,34 @@ body {
 }
 
 .card-body {
-    padding-top: 10px;
+    padding-top: 5px;
 }
+
 .card-header {
     padding: 0px;
     margin-bottom: 10px;
+}
+
+.single-header {
+    margin-bottom: -5px;
+    text-align: center;
+}
+
+.card-filter {
+    position: sticky;
+    top: 50px;
+    z-index: 99999;
+    margin-bottom: 20px;
 }
 
 .navbar-light .navbar-brand, .navbar-light .navbar-brand:hover {
     color: #f2f2f2;
 }
 
-.row {
+.row, .col {
     margin-left: 0px;
     margin-right: 0px;
+    padding: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }

@@ -16,10 +16,7 @@ app.config.suppress_callback_exceptions = True
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content',
-        style={
-            # 'padding': '50px'
-        }),
+    html.Div(id='page-content'),
     dcc.Loading(type='graph', fullscreen=True, children=[
         html.Div(id='container-data-store', style={'display': 'none'}, children=[
             dcc.Store(id='data-store')])])
@@ -66,8 +63,8 @@ def upload_data(contents, n_click, save, url_input):
     return url, datasets
 
 @app.callback(
-    [Output('dropdown_users', 'options'), Output('navbar-brand', 'children'), Output('created-by', 'children'), Output('user-count', 'children')],
-    [Input('dropdown_users', 'value')], [State('data-store', 'data')])
+    [Output('dropdown-users', 'options'), Output('navbar-brand', 'children'), Output('created-by', 'children'), Output('count-user', 'children')],
+    [Input('dropdown-users', 'value')], [State('data-store', 'data')])
 def fill_dropdown_users(dropdown_users, datasets):
     datasets = json.loads(datasets)
     df = pd.read_json(datasets['data'], orient='split')
@@ -79,48 +76,58 @@ def fill_dropdown_users(dropdown_users, datasets):
     ]
     return output
 
-@app.callback(Output('selectall_users_container', 'children'), [Input('dropdown_users', 'value')], [State('selectall_users', 'value')])
+@app.callback(Output('selectall-users-container', 'children'), [Input('dropdown-users', 'value')], [State('selectall-users', 'value')])
 def update_selectall_users(dropdown_users, select_all):
     if len(dropdown_users) > 0 and select_all == [1]:
-        select_all_container = dcc.Checklist(id='selectall_users', options=[{'label': 'Select All', 'value': 1}], value=[])
+        select_all_container = dcc.Checklist(id='selectall-users', options=[{'label': 'Select All', 'value': 1}], value=[])
     elif len(dropdown_users) == 0 and select_all == []:
-        select_all_container = dcc.Checklist(id='selectall_users', options=[{'label': 'Select All', 'value': 1}], value=[1])
+        select_all_container = dcc.Checklist(id='selectall-users', options=[{'label': 'Select All', 'value': 1}], value=[1])
     else:
         select_all_container = dash.no_update
     return select_all_container
 
-@app.callback(Output('dropdown_users_container', 'children'), [Input('selectall_users', 'value')], [State('dropdown_users', 'value')])
+@app.callback(Output('dropdown-users-container', 'children'), [Input('selectall-users', 'value')], [State('dropdown-users', 'value')])
 def update_dropdown_users(select_all, dropdown_users):
     if select_all == [1] and len(dropdown_users) > 0:
-        return dcc.Dropdown(id='dropdown_users', options=[], multi=True, value=[])
+        return dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[])
     else:
         return dash.no_update
 
 @app.callback(
-    [Output('counter', 'children'), Output('message-count', 'children'), Output('word-count', 'children'), Output('emoji-count', 'children'), Output('mention-count', 'children'),
-     Output('media-count', 'children'), Output('location-count', 'children'), Output('link-count', 'children'), Output('contact-count', 'children'),
-     Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'), Output('chart-4', 'figure')],
-    [Input('dropdown_users', 'value'), Input('time-interval', 'value')],
+    [Output('counter', 'children'), Output('count-message', 'children'), Output('count-word', 'children'), Output('count-emoji', 'children'), Output('count-mention', 'children'),
+     Output('count-media', 'children'), Output('count-location', 'children'), Output('count-link', 'children'), Output('count-contact', 'children'),
+     Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'),
+     Output('avg-user', 'children'), Output('avg-message', 'children'), Output('avg-day', 'children'), Output('avg-month', 'children')],
+    [Input('dropdown-users', 'value'), Input('time-interval1', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, interval, datasets):
-    df = pd.read_json(json.loads(datasets)['data'], orient='split')
+    datasets = json.loads(datasets)
+    df = pd.read_json(datasets['data'], orient='split')
     filtered_df = df[((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0))]
-    by_category = filtered_df.groupby('category').size()
-    by_column = filtered_df.sum(numeric_only=True)
-    output = [
-        filtered_df.groupby('day').size(),
-        '{:,} sent, {:,} deleted'.format(by_category.sum() - by_category.get('Event', default=0), by_category.get('Deleted', default=0)),
-        '{:,} sent'.format(by_column['count_words']),
-        '{:,} sent'.format(by_column['count_emoji']),
-        '{:,} sent'.format(by_column['count_mention']),
-        '{:,} shared'.format(by_category.get('Media', default=0)),
-        '{:,} shared'.format(by_category.get('Location', default=0)),
-        '{:,} shared'.format(by_column['count_link']),
-        '{:,} shared'.format(by_category.get('Contact', default=0)),
-        charts.chart1(filtered_df, interval),
-        charts.chart2(filtered_df),
-        charts.chart3(filtered_df),
-        charts.chart4(filtered_df)]
+    output = [dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update]
+    ctx = dash.callback_context
+    if ctx.triggered[0]['prop_id'] == 'time-interval.value':
+        output[9] = charts.chart1(filtered_df, interval)
+    else:
+        by_category = filtered_df.groupby('category').size()
+        by_column = filtered_df.sum(numeric_only=True)
+        output = [
+            filtered_df.groupby('day').size(),
+            '{:,} sent, {:,} deleted'.format(by_category.sum() - by_category.get('Event', default=0), by_category.get('Deleted', default=0)),
+            '{:,} sent'.format(by_column['count_words']),
+            '{:,} sent'.format(by_column['count_emoji']),
+            '{:,} sent'.format(by_column['count_mention']),
+            '{:,} shared'.format(by_category.get('Media', default=0)),
+            '{:,} shared'.format(by_category.get('Location', default=0)),
+            '{:,} shared'.format(by_column['count_link']),
+            '{:,} shared'.format(by_category.get('Contact', default=0)),
+            charts.chart1(filtered_df, interval),
+            charts.chart2(filtered_df),
+            charts.chart3(filtered_df),
+            '{:,.2f} messages'.format((by_category.sum() - by_category.get('Event', default=0))/filtered_df.contact.nunique(dropna=True)),
+            '{:,.2f} words, {:.2f} emoji'.format(by_column['count_words']/by_category.get('Text', default=0), by_column['count_emoji']/by_category.get('Text', default=0)),
+            '{:,.2f} text, {:.2f} media'.format(by_category.get('Text', default=0)/filtered_df.date.nunique(), by_category.get('Media', default=0)/filtered_df.date.nunique()),
+            '{:,.2f} text, {:.2f} media'.format(by_category.get('Text', default=0)/filtered_df.month.nunique(), by_category.get('Media', default=0)/filtered_df.month.nunique())]
     return output
 
 if __name__ == "__main__":

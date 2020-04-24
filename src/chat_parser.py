@@ -64,7 +64,7 @@ def get_language(df):
 def clean_message(x):
     """Remove newline, emoji, and media from message."""
     category, message = x
-    if category == 'Message':
+    if category == 'Text':
         message = message.replace('\n', ' ')
         message = re.sub(RE_PATTERN['universal']['emoji'], '', message)
         message = re.sub(RE_PATTERN['universal']['link'], '', message)
@@ -77,7 +77,7 @@ def find_link(x):
     """Find links from message."""
     category, message = x
     list_link = []
-    if category == 'Message':
+    if category == 'Text':
         for link in re.findall(RE_PATTERN['universal']['link'], message):
             if link[-1] in ['.', ',']:
                 temp = link[:-1]
@@ -88,7 +88,7 @@ def find_link(x):
 
 def get_category(x, lang):
     contact, message = x
-    if contact == '':
+    if pd.isna(contact):
         return 'Event'
     elif re.match(RE_PATTERN[lang]['media'], message):
         return 'Media'
@@ -99,7 +99,7 @@ def get_category(x, lang):
     elif re.match(RE_PATTERN[lang]['deleted'], message):
         return 'Deleted'
     else:
-        return 'Message'
+        return 'Text'
 
 def extract_event(text, lang):
     for event in RE_PATTERN[lang]['events']:
@@ -109,11 +109,11 @@ def extract_event(text, lang):
             if len(matchs) == 3:
                 contact, message, target = matchs
             elif len(matchs) == 2:
-                contact, message, target = matchs[0], matchs[1], ''
+                contact, message, target = matchs[0], matchs[1], np.nan
             else:
-                contact, message, target = '', matchs[0], ''
+                contact, message, target = np.nan, matchs[0], np.nan
             return contact, message, target
-    return '', text, ''
+    return np.nan, text, np.nan
 
 def enrich(df):
     """Adding some column for analysis."""
@@ -159,7 +159,7 @@ def parse(chat, save=True):
         if len(msg_splitted) > 1:
             contact, msg = msg_splitted
         else:
-            contact, msg = '', msg_splitted[0]
+            contact, msg = np.nan, msg_splitted[0]
         if '\\U000' in msg or '\\u' in msg:
             msg = replace_emoji(msg, emoji)
         if msg[-2:] == '\\n':
@@ -187,7 +187,7 @@ def load_parsed_data(input_string, input_type, save=True):
     # TODO: support for both private & group chat
     group_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
     chat_name = df[(df.category == 'Event') & (df.event_type.isin(['created group', 'changed the subject']))].tail(1)['event_target']
-    users = sorted(filter(lambda x: len(x) > 0, df.contact.unique().tolist()))
+    users = sorted(filter(pd.notna, df.contact.unique().tolist()))
     df = df.drop(group_created.index)
     df = df.drop(['message', 'clean_message'], axis=1)
     datasets = {

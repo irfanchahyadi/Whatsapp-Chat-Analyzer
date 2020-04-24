@@ -50,60 +50,64 @@ groupchat = html.Div([
                 html.A(
                     dbc.Col(html.Img(src=LOGO, height="30px")), href='/'),
                 dbc.Col(dbc.NavbarBrand(id='navbar-brand', className='ml-2'), style={'margin-left': '10px'})],
-                align='center',
-                no_gutters=True),
-            dbc.NavbarToggler(id="navbar-toggler")],
-        color='dark',
-        fixed='top',
-        style={'height': '50px'})]),
+                align='center', no_gutters=True)], color='dark', fixed='top', style={'height': '50px'})]),
 
+    dbc.Col([
+        dbc.Row([
+                dbc.Card([dbc.CardHeader([html.H6('Created by')]), html.Div(id='created-by')], className='col-md-3'),
+                dbc.Card([dbc.CardHeader([html.H6('Messages')]), html.Div(id='count-message')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Words')), html.Div(id='count-word')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Emoji')), html.Div(id='count-emoji')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Mentions')), html.Div(id='count-mention')], className='col-md')], justify='around'),
+        dbc.Row([
+                dbc.Card([dbc.CardHeader(html.H6('Media')), html.Div(id='count-media')], className='col-md'),
+                dbc.Card([dbc.CardHeader([html.H6('Location')]), html.Div(id='count-location')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Link')), html.Div(id='count-link')], className='col-md'),
+                dbc.Card([dbc.CardHeader([html.H6('Contact')]), html.Div(id='count-contact')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Users')), html.Div(id='count-user')], className='col-md-3')], justify='around', style={'margin-top': '-10px'})]),
 
-    dbc.Row([
-            dbc.Card([dbc.CardHeader([html.H6('Created by')]), html.Div(id='created-by')], className='col-md-3'),
-            dbc.Card([dbc.CardHeader([html.H6('Messages')]), html.Div(id='message-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Words')), html.Div(id='word-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Emoji')), html.Div(id='emoji-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Mentions')), html.Div(id='mention-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Media')), html.Div(id='media-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader([html.H6('Location')]), html.Div(id='location-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Link')), html.Div(id='link-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader([html.H6('Contact')]), html.Div(id='contact-count')], className='col-md-2'),
-            dbc.Card([dbc.CardHeader(html.H6('Users')), html.Div(id='user-count')], className='col-md-3'),
-        ], justify='around'),
-
-    dbc.Row([
-        dbc.Col(
-            html.Div(id='selectall_users_container', children=[
-                dcc.Checklist(id='selectall_users', options=[{'label': 'Select All', 'value': 1}], value=[1])]), className='col-md-1'),
-        dbc.Col(
-            html.Div(id='dropdown_users_container', children=[
-                dcc.Dropdown(id='dropdown_users', options=[], multi=True, value=[])]), className='col-md-11')], align='center'),
+    dbc.Card(
+        dbc.Row([
+            html.Div(id='selectall-users-container', children=[
+                dcc.Checklist(id='selectall-users', options=[{'label': 'Select All', 'value': 1}], value=[1])], style={'margin-right': '10px', 'align-self': 'flex-end'}),
+            dbc.Col(
+                html.Div(id='dropdown-users-container', children=[
+                    dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[])]))], align='center'), className='card-filter'),
 
     dbc.Card(
         dbc.CardBody([
-            dbc.CardHeader(html.H4('Time Series Chat')),
-            dcc.RadioItems(id='time-interval',
+            dbc.CardHeader(html.H5('Time Series Chat')),
+            dcc.RadioItems(id='time-interval1',
                 options=[
                     {'label': 'Yearly  ', 'value': 'year'},
                     {'label': 'Monthly  ', 'value': 'month'},
                     {'label': 'Weekly  ', 'value': 'week'},
                     {'label': 'Daily  ', 'value': 'date'}],
-                value='date',
-                inputStyle={'margin-left': '7px'}),
+                value='date', inputStyle={'margin-left': '7px'}),
             dcc.Graph(id='chart-1', figure={})])),
     dbc.Row([
         dbc.Card(
             dbc.CardBody([
-                dbc.CardHeader(html.H4('Daily Chat Activity')),
-                    dcc.Graph(id='chart-2', figure={}),
-                    ]), className='col-md-4'),
+                dbc.CardHeader(html.H5('Daily Chat Activity')),
+                    dcc.Graph(id='chart-2', figure={})]), className='col-md-4'),
         dbc.Card(
             dbc.CardBody([
-                dbc.CardHeader(html.H4('Chat Activity by Hour')),
-                dbc.Col([
-                    dcc.Graph(id='chart-3', figure={}),
-                    dcc.Graph(id='chart-4', figure={})])]), className='col')
-    ]),
+                dbc.CardHeader(html.H5('Chat Activity by Hour')),
+                dcc.Graph(id='chart-3', figure={})]), className='col-md')]),
+
+    dbc.Card(dbc.CardHeader(html.H5('Averages'), className='single-header')),
+    dbc.Col([
+        dbc.Row([
+                dbc.Card([dbc.CardHeader([html.H6('Per User')]), html.Div(id='avg-user')], className='col-md'),
+                dbc.Card([dbc.CardHeader([html.H6('Per Text Message')]), html.Div(id='avg-message')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Per Day')), html.Div(id='avg-day')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Per Month')), html.Div(id='avg-month')], className='col-md')], justify='around', style={'margin-top': '-10px'}),
+        dbc.Row([
+                dbc.Card([dbc.CardHeader([html.H6('Created by')]), html.Div(id='')], className='col-md'),
+                dbc.Card([dbc.CardHeader([html.H6('Messages')]), html.Div(id='')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Words')), html.Div(id='')], className='col-md'),
+                dbc.Card([dbc.CardHeader(html.H6('Emoji')), html.Div(id='')], className='col-md')], justify='around')]),
+
     html.Div(id='counter')
 ])
 

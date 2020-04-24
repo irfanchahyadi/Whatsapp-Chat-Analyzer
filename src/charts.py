@@ -28,31 +28,24 @@ def chart2(df):
                 'angularaxis': {'rotation': 90, 'direction': 'clockwise'}}}}
 
 def chart3(df):
-    pivoted = df.groupby('hour').size()
+    pivoted1 = df.groupby('hour').size()
+    pivoted2 = df[['day', 'hour']].pivot_table(index='day', columns='hour', aggfunc=len, fill_value=0)
     return {
         'data': [{
             'type': 'scatter',
             'x': HOURS,
-            'y': [pivoted.get(i, default=0) for i in HOURS],
-            'line': {'width': 3}}],
-        'layout': {
-            'height': 150,
-            'margin': {'l': 0, 'r': 70, 't': 0, 'b': 30},
-            'yaxis': {'nticks': 7, 'side': 'right'},
-            'xaxis': {'visible': False}}}
-
-def chart4(df):
-    pivoted = df[['day', 'hour']].pivot_table(index='day', columns='hour', aggfunc=len, fill_value=0)
-    return {
-        'data': [{
-            'type': 'heatmap',
-            'z': [[pivoted.loc[i, j] if j in pivoted.columns else 0 for j in HOURS] if i in pivoted.index else [0]*24 for i in DAYS[::-1]],
+            'y': [pivoted1.get(i, default=0) for i in HOURS],
+            'line': {'width': 3}},
+            {'type': 'heatmap',
+            'z': [[pivoted2.loc[i, j] if j in pivoted2.columns else 0 for j in HOURS] if i in pivoted2.index else [0]*24 for i in DAYS[::-1]],
             'x': HOURS,
             'y': DAYS[::-1],
+            'xaxis': 'x',
+            'yaxis': 'y2',
             'showscale': False}],
         'layout': {
-            'height': 190,
-            'margin': {'l': 0, 'r': 70, 't': 0, 'b': 50},
-            'yaxis': {'side': 'right'},
-            'xaxis': {'tickangle': 45}}
-    }
+            'grid': {'rows': 2, 'columns': 1},
+            'height': 300,
+            'margin': {'l': 0, 'r': 70, 't': 10, 'b': 50},
+            'yaxis': {'nticks': 7, 'side': 'right', 'domain': [0.55, 1]},
+            'yaxis2': {'side': 'right', 'domain': [0, 0.53]}}}
