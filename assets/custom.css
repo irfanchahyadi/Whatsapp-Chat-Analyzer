@@ -1,6 +1,8 @@
 body {
-  background-color: #f2f2f2;
-  margin: 5%;
+  background-color: #ffffff;
+  margin-top: 60px;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .card  {
@@ -8,6 +10,7 @@ body {
     box-shadow: 5px 5px 5px lightgrey;
     margin: 10px;
     padding: 10px;
+    border-color: #77d7c8;
 }
 
 .card-body {
@@ -17,6 +20,7 @@ body {
 .card-header {
     padding: 0px;
     margin-bottom: 10px;
+    border-color: #77d7c8;
 }
 
 .single-header {
@@ -31,6 +35,13 @@ body {
     margin-bottom: 20px;
 }
 
+.wa-navbar {
+    background-color: #1ebea5 !important;
+    height: 50px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
 .navbar-light .navbar-brand, .navbar-light .navbar-brand:hover {
     color: #f2f2f2;
 }
@@ -41,4 +52,16 @@ body {
     padding: 0px;
     margin-top: 0px;
     margin-bottom: 0px;
+}
+
+td {
+    padding-right: 10px;
+}
+
+.td-content {
+    padding-right: 30px;
+}
+
+.td-value {
+    text-align: right;
 }

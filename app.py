@@ -97,14 +97,15 @@ def update_dropdown_users(select_all, dropdown_users):
     [Output('counter', 'children'), Output('count-message', 'children'), Output('count-word', 'children'), Output('count-emoji', 'children'), Output('count-mention', 'children'),
      Output('count-media', 'children'), Output('count-location', 'children'), Output('count-link', 'children'), Output('count-contact', 'children'),
      Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'),
-     Output('avg-user', 'children'), Output('avg-message', 'children'), Output('avg-day', 'children'), Output('avg-month', 'children')],
+     Output('avg-user', 'children'), Output('avg-message', 'children'), Output('avg-day', 'children'), Output('avg-month', 'children'),
+     Output('most-busy', 'children'), Output('most-active', 'children'), Output('most-silent', 'children'), Output('most-typer', 'children')],
     [Input('dropdown-users', 'value'), Input('time-interval1', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, interval, datasets):
     datasets = json.loads(datasets)
     df = pd.read_json(datasets['data'], orient='split')
     filtered_df = df[((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0))]
-    output = [dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update]
+    output = [dash.no_update] * 20
     ctx = dash.callback_context
     if ctx.triggered[0]['prop_id'] == 'time-interval.value':
         output[9] = charts.chart1(filtered_df, interval)
@@ -127,7 +128,12 @@ def update_filter(dropdown_users, interval, datasets):
             '{:,.2f} messages'.format((by_category.sum() - by_category.get('Event', default=0))/filtered_df.contact.nunique(dropna=True)),
             '{:,.2f} words, {:.2f} emoji'.format(by_column['count_words']/by_category.get('Text', default=0), by_column['count_emoji']/by_category.get('Text', default=0)),
             '{:,.2f} text, {:.2f} media'.format(by_category.get('Text', default=0)/filtered_df.date.nunique(), by_category.get('Media', default=0)/filtered_df.date.nunique()),
-            '{:,.2f} text, {:.2f} media'.format(by_category.get('Text', default=0)/filtered_df.month.nunique(), by_category.get('Media', default=0)/filtered_df.month.nunique())]
+            '{:,.2f} text, {:.2f} media'.format(by_category.get('Text', default=0)/filtered_df.month.nunique(), by_category.get('Media', default=0)/filtered_df.month.nunique()),
+            layouts.award_list(filtered_df.groupby('date').size().sort_values(ascending=False)),
+            layouts.award_list(filtered_df[filtered_df.category != 'Event'].groupby('contact').size().sort_values(ascending=False)),
+            layouts.award_list(filtered_df[filtered_df.category != 'Event'].groupby('contact').size().sort_values(ascending=True)),
+            layouts.award_list(filtered_df[filtered_df.category == 'Text'].groupby('contact')['count_character'].sum().sort_values(ascending=False))
+        ]
     return output
 
 if __name__ == "__main__":
