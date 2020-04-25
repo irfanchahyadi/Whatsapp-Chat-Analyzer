@@ -22,43 +22,48 @@ app.layout = html.Div([
 
 @app.callback([Output('page-content', 'children'), Output('container-data-store', 'children')], [Input('url', 'pathname')])
 def display_page(pathname):
+    container_data_store = dash.no_update
     if pathname == '/':
-        return layouts.home, dash.no_update
+        page_content = layouts.home
     elif pathname.startswith('/groupchat/') or pathname.startswith('/personalchat/'):
         chat_type, url_key = pathname[1:].split('/')
         page_content = layouts.groupchat if chat_type == 'groupchat' else None
-        container_data_store = dash.no_update
-        if pathname.endswith(settings.FROM_LANDING_PAGE):
-            container_data_store = dash.no_update
-        else:
+        if not pathname.endswith(settings.FROM_LANDING_PAGE):
             url, datasets = chat_parser.load_parsed_data(url_key, 'url')
             container_data_store = dcc.Store(id='data-store', data=datasets)
             if url == 'not_found':
                 page_content = layouts.not_found
-                container_data_store = dash.no_update
-        return page_content, container_data_store
+    elif pathname.endswith('not_found'):
+        page_content = layouts.not_found
     else:
-        return layouts.page_404, dash.no_update
+        page_content = layouts.page_404
+    return page_content, container_data_store
 
 @app.callback(
-    [Output('url', 'pathname'), Output('data-store', 'data')],
+    [Output('url', 'pathname'), Output('data-store', 'data'), Output('alert-container', 'children')],
     [Input('upload-data', 'contents'), Input('url-submit', 'n_clicks')],
     [State('save-switch', 'on'), State('url-input', 'value')])
 def upload_data(contents, n_click, save, url_input):
     ctx = dash.callback_context
-    url, datasets = dash.no_update, dash.no_update
+    url, datasets, alert = dash.no_update, dash.no_update, dash.no_update
     if ctx.triggered[0]['prop_id'] == 'upload-data.contents':
         content_type, content = contents.split(',')
         if content_type == 'data:text/plain;base64':
             content_decoded = base64.b64decode(content)
             url, datasets = chat_parser.load_parsed_data(content_decoded, 'upload', save)
-            url = url + settings.FROM_LANDING_PAGE
-            # TODO: add alert message, wrong file type, please upload txt file
+            if url == 'not_supported':
+                supported_language = ', '.join([settings.PATTERN[i]['language'] for i in list(settings.PATTERN.keys())[1:]])
+                alert = dbc.Alert('Language not supported. Currently support: {} language.'.format(supported_language), dismissable=True, color='danger')
+                url = dash.no_update
+            else:
+                url = url + settings.FROM_LANDING_PAGE
+        else:
+            alert = dbc.Alert('Wrong file type, please upload txt file from exported Whatsapp chat.', dismissable=True, color='danger')
     elif ctx.triggered[0]['prop_id'] == 'url-submit.n_clicks':
         url, datasets = chat_parser.load_parsed_data(url_input, 'url')
         if url != 'not_found':
             url = url + settings.FROM_LANDING_PAGE
-    return url, datasets
+    return url, datasets, alert
 
 @app.callback(
     [Output('dropdown-users', 'options'), Output('navbar-brand', 'children'), Output('created-by', 'children'), Output('count-user', 'children')],

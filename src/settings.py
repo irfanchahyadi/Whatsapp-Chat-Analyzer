@@ -19,6 +19,7 @@ PATTERN = {
         'link': '(?:(?:(?:https|http|ftp):\/\/(?:www\.)?)|(?:www\.))\S+\.\S+',
         'mention': '@\d+'},
     'en': {
+        'language': 'English',
         'date': '%m/%d/%y, %H:%M',
         'media': '<(?:Media)(?:[^>]+)>',
         'location': '(?:live location shared|(?:location:\s{}))',

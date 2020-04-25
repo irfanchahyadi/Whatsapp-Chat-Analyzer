@@ -42,7 +42,7 @@ def get_chat(url):
     if len(chat_id) > 0:
         return get_df(f'select * from chat where id_chat={chat_id[0][0]};'), chat_id[0][1]
     else:
-        return pd.DataFrame(), ''
+        return pd.DataFrame(), 'not_found'
 
 def add_chat(df, lang, url):
     sql = "insert into uploaded (datetime, lang, url) values (%s, %s, %s) returning id;"

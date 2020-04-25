@@ -31,17 +31,9 @@ home = html.Div([
                         daq.BooleanSwitch(id='save-switch', on=True, color='#29b6f6', style={'display': 'inline-block', 'margin-right': '10px'})])],
                     style={'display': 'block', 'text-align': 'end'}),
                 html.Div(
-                    dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]),
-                        style={
-                            'width': '100%',
-                            'height': '200px',
-                            'lineHeight': '200px',
-                            'borderWidth': '3px',
-                            'borderStyle': 'dashed',
-                            'borderRadius': '10px',
-                            'textAlign': 'center'},
-                        multiple=False))])])),
-    dbc.Alert('hello world', duration=1000, fade=True, style={'position': 'fixed', 'width': '100%', 'top': '0px', 'left': '0px'}),
+                    dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file')),
+                html.Div(id='alert-container')
+            ])])),
 ])
 
 groupchat = html.Div([

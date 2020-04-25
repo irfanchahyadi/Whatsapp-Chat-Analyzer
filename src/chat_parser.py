@@ -39,6 +39,7 @@ def detect_language(chat):
     for lang in list(PATTERN.keys())[1:]:
         if re.match(PATTERN[lang]['events'][0], chat):
             return lang
+    return 'not_supported'
 
 def clean_message(x):
     """Remove newline, emoji, and media from message."""
@@ -125,44 +126,50 @@ def parse(chat):
 
     chat = chat.decode().encode('unicode_escape').decode('utf-8')
     lang = detect_language(chat)
-    pattern = PATTERN[lang]['date'] + ' - '
-    re_pattern = convert_to_re_pattern(pattern)
 
-    dates = re.findall(re_pattern, chat)
-    msgs = re.split(re_pattern, chat)
-    msgs.pop(0)
+    if lang == 'not_supported':
+        df = pd.DataFrame()
+    else:
+        pattern = PATTERN[lang]['date'] + ' - '
+        re_pattern = convert_to_re_pattern(pattern)
 
-    data = []
-    for date, msg in zip(dates, msgs):
-        date = datetime.strptime(date, pattern)
-        msg_splitted = msg.split(': ', 1)
-        if len(msg_splitted) > 1:
-            contact, msg = msg_splitted
-        else:
-            contact, msg = np.nan, msg_splitted[0]
-        if '\\U000' in msg or '\\u' in msg:
-            msg = replace_emoji(msg, emoji)
-        if msg[-2:] == '\\n':
-            msg = msg[:-2]
-        data.append({
-            'datetime': date,
-            'contact': contact,
-            'message': msg.encode().decode('unicode_escape')})
-    df = pd.DataFrame(data)
+        dates = re.findall(re_pattern, chat)
+        msgs = re.split(re_pattern, chat)
+        msgs.pop(0)
+
+        data = []
+        for date, msg in zip(dates, msgs):
+            date = datetime.strptime(date, pattern)
+            msg_splitted = msg.split(': ', 1)
+            if len(msg_splitted) > 1:
+                contact, msg = msg_splitted
+            else:
+                contact, msg = np.nan, msg_splitted[0]
+            if '\\U000' in msg or '\\u' in msg:
+                msg = replace_emoji(msg, emoji)
+            if msg[-2:] == '\\n':
+                msg = msg[:-2]
+            data.append({
+                'datetime': date,
+                'contact': contact,
+                'message': msg.encode().decode('unicode_escape')})
+        df = pd.DataFrame(data)
     return df, lang
 
 def load_parsed_data(input_string, input_type, save=True):
     if input_type == 'upload':
         df, lang = parse(input_string)
         url = db.generate_url(10)
-        if save:
+        if save and not df.empty:
             db.reset_chat() # TODO: delete this for production
             url = db.add_chat(df, lang, url)
     elif input_type == 'url':
         url = input_string
         df, lang = db.get_chat(url)
-    if df.empty:
-        return 'not_found', {'data': ''}
+
+    if lang in ['not_supported', 'not_found']:
+        return lang, {'data': ''}
+
     df = enrich(df, lang)
     # TODO: support for both private & group chat
     group_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
