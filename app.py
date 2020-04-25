@@ -112,37 +112,37 @@ def update_filter(dropdown_users, interval, datasets):
     if ctx.triggered[0]['prop_id'] == 'time-interval.value':
         output[9] = charts.chart1(filtered_df, interval)
     else:
-        by_category = filtered_df.groupby('category').size()
-        by_column = filtered_df.sum(numeric_only=True)
+        by_category = filtered_df[['contact', 'category']].pivot_table(index='contact', columns='category', aggfunc=len, fill_value=0).reindex(columns=['Contact', 'Deleted', 'Event', 'Location', 'Media', 'Text'], fill_value=0)
+        by_column = filtered_df.groupby('contact').sum(numeric_only=True)
         output = [
             filtered_df.groupby('day').size(),
-            '{:,} sent, {:,} deleted'.format(by_category.sum() - by_category.get('Event', default=0), by_category.get('Deleted', default=0)),
-            '{:,} sent'.format(by_column['count_words']),
-            '{:,} sent'.format(by_column['count_emoji']),
-            '{:,} sent'.format(by_column['count_mention']),
-            '{:,} shared'.format(by_category.get('Media', default=0)),
-            '{:,} shared'.format(by_category.get('Location', default=0)),
-            '{:,} shared'.format(by_column['count_link']),
-            '{:,} shared'.format(by_category.get('Contact', default=0)),
+            '{:,} sent, {:,} deleted'.format(by_category.sum().sum() - by_category['Event'].sum(), by_category['Deleted'].sum()),
+            '{:,} sent'.format(by_column['count_words'].sum()),
+            '{:,} sent'.format(by_column['count_emoji'].sum()),
+            '{:,} sent'.format(by_column['count_mention'].sum()),
+            '{:,} shared'.format(by_category['Media'].sum()),
+            '{:,} shared'.format(by_category['Location'].sum()),
+            '{:,} shared'.format(by_column['count_link'].sum()),
+            '{:,} shared'.format(by_category['Contact'].sum()),
             charts.chart1(filtered_df, interval),
             charts.chart2(filtered_df),
             charts.chart3(filtered_df),
-            '{:,.2f} messages'.format((by_category.sum() - by_category.get('Event', default=0))/filtered_df.contact.nunique(dropna=True)),
-            '{:,.2f} words, {:.2f} emoji'.format(by_column['count_words']/by_category.get('Text', default=0), by_column['count_emoji']/by_category.get('Text', default=0)),
-            '{:,.2f} text, {:.2f} media'.format(by_category.get('Text', default=0)/filtered_df.date.nunique(), by_category.get('Media', default=0)/filtered_df.date.nunique()),
-            '{:,.2f} text, {:.2f} media'.format(by_category.get('Text', default=0)/filtered_df.month.nunique(), by_category.get('Media', default=0)/filtered_df.month.nunique()),
+            '{:,.2f} messages'.format((by_category.sum().sum() - by_category['Event'].sum())/filtered_df.contact.nunique(dropna=True)),
+            '{:,.2f} words, {:.2f} emoji'.format(by_column['count_words'].sum()/by_category['Text'].sum(), by_column['count_emoji'].sum()/by_category['Text'].sum()),
+            '{:,.2f} text, {:.2f} media'.format(by_category['Text'].sum()/filtered_df.date.nunique(), by_category['Media'].sum()/filtered_df.date.nunique()),
+            '{:,.2f} text, {:.2f} media'.format(by_category['Text'].sum()/filtered_df.month.nunique(), by_category['Media'].sum()/filtered_df.month.nunique()),
             layouts.award_list(filtered_df.groupby('date').size().sort_values(ascending=False)),
-            layouts.award_list(filtered_df[filtered_df.category != 'Event'].groupby('contact').size().sort_values(ascending=False)),
-            layouts.award_list(filtered_df[filtered_df.category != 'Event'].groupby('contact').size().sort_values(ascending=True)),
-            layouts.award_list(filtered_df[filtered_df.category == 'Text'].groupby('contact')['count_character'].sum().sort_values(ascending=False)),
-            layouts.award_list(filtered_df.groupby('contact')['count_emoji'].sum().sort_values(ascending=False)),
-            layouts.award_list(filtered_df[filtered_df.category == 'Media'].groupby('contact').size().sort_values(ascending=False)),
-            layouts.award_list(filtered_df[filtered_df.category == 'Location'].groupby('contact').size().sort_values(ascending=False)),
-            layouts.award_list(filtered_df.groupby('contact')['count_link'].sum().sort_values(ascending=False)),
-            layouts.award_list(filtered_df[filtered_df.category == 'Contact'].groupby('contact').size().sort_values(ascending=False)),
-            layouts.award_list(filtered_df.groupby('contact')['count_mention'].sum().sort_values(ascending=False)),
+            layouts.award_list((by_category.sum(axis=1) - by_category['Event']).sort_values(ascending=False)),
+            layouts.award_list((by_category.sum(axis=1) - by_category['Event'])[lambda x: x > 0].sort_values(ascending=True)),
+            layouts.award_list(by_column['count_character'].sort_values(ascending=False)),
+            layouts.award_list(by_column['count_emoji'].sort_values(ascending=False)),
+            layouts.award_list(by_category['Media'].sort_values(ascending=False)),
+            layouts.award_list(by_category['Location'].sort_values(ascending=False)),
+            layouts.award_list(by_column['count_link'].sort_values(ascending=False)),
+            layouts.award_list(by_category['Contact'].sort_values(ascending=False)),
+            layouts.award_list(by_column['count_mention'].sort_values(ascending=False)),
             layouts.award_list(filtered_df[(filtered_df.category == 'Event') & (filtered_df.event_type == 'added')].groupby('contact').size().sort_values(ascending=False)),
-            layouts.award_list(filtered_df[(filtered_df.category == 'Deleted')].groupby('contact').size().sort_values(ascending=False)),
+            layouts.award_list(by_category['Deleted'].sort_values(ascending=False)),
         ]
     return output
 

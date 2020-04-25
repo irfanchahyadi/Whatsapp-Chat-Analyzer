@@ -140,7 +140,7 @@ def award_list(series, n=3):
         if k > 0:
             row = html.Tr([
                 html.Td(f'{i+1}.'),
-                html.Td(j if type(j) == str else j.strftime('%d %b %Y'), className='td-content'),
+                html.Td(j if type(j) == str else j.strftime('%d %B %Y'), className='td-content'),
                 html.Td('{:,}'.format(k), className='td-value'),
                 html.Td(trophy_emoji if i == 0 else '')])
             list_row.append(row)
