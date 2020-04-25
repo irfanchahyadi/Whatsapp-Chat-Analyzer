@@ -17,7 +17,8 @@ home = html.Div([
                         placeholder='Enter your last url key',
                         type='text',
                         maxLength=10,
-                        value='',
+                        autoFocus=True,
+                        debounce=True,
                         className='form-control'),
                     html.Button(id='url-submit', children='Submit', className='btn btn-primary')])])),
     dbc.Card(

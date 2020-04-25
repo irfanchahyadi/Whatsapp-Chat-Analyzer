@@ -35,10 +35,9 @@ def convert_to_re_pattern(pattern):
         i += 1
     return re_pattern
 
-def get_language(df):
-    first_message = df.loc[0, 'message']
+def detect_language(chat):
     for lang in list(PATTERN.keys())[1:]:
-        if re.match(PATTERN[lang]['events'][0], first_message):
+        if re.match(PATTERN[lang]['events'][0], chat):
             return lang
 
 def clean_message(x):
@@ -95,9 +94,8 @@ def extract_event(text, lang):
             return contact, message, target
     return np.nan, text, np.nan
 
-def enrich(df):
+def enrich(df, lang):
     """Adding some column for analysis."""
-    lang = get_language(df)
     df['category'] = pd.Categorical(df[['contact', 'message']].apply(lambda x: get_category(x, lang), axis=1))
     df['clean_message'] = df[['category', 'message']].apply(clean_message, axis=1)
     df['date'] = df.datetime.dt.date
@@ -123,11 +121,13 @@ def enrich(df):
 
 def parse(chat):
     """Parse exported chat and define date, contact, message for each message."""
-    pattern = detect_pattern()
-    re_pattern = convert_to_re_pattern(pattern)
     emoji = db.get_emoji()[['index', 'unicode']].values.tolist()
 
     chat = chat.decode().encode('unicode_escape').decode('utf-8')
+    lang = detect_language(chat)
+    pattern = PATTERN[lang]['date'] + ' - '
+    re_pattern = convert_to_re_pattern(pattern)
+
     dates = re.findall(re_pattern, chat)
     msgs = re.split(re_pattern, chat)
     msgs.pop(0)
@@ -149,21 +149,21 @@ def parse(chat):
             'contact': contact,
             'message': msg.encode().decode('unicode_escape')})
     df = pd.DataFrame(data)
-    return df
+    return df, lang
 
 def load_parsed_data(input_string, input_type, save=True):
     if input_type == 'upload':
-        df = parse(input_string)
+        df, lang = parse(input_string)
         url = db.generate_url(10)
         if save:
             db.reset_chat() # TODO: delete this for production
-            url = db.add_chat(df, url)
+            url = db.add_chat(df, lang, url)
     elif input_type == 'url':
         url = input_string
-        df = db.get_chat(url)
+        df, lang = db.get_chat(url)
     if df.empty:
         return 'not_found', {'data': ''}
-    df = enrich(df)
+    df = enrich(df, lang)
     # TODO: support for both private & group chat
     group_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
     chat_name = df[(df.category == 'Event') & (df.event_type.isin(['created group', 'changed the subject']))].tail(1)['event_target']

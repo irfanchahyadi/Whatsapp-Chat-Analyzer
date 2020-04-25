@@ -25,7 +25,7 @@ PATTERN = {
         'contact': '^.+\.(vcf \(file attached\))',
         'deleted': '(This message was deleted|You deleted this message)',
         'events': [
-            '^(Messages to this group are now secured with end-to-end encryption.)\s.+',
+            '.+\s(Messages to this group are now secured with end-to-end encryption.)\s.+',
             "^(You're now an admin)",
             '(.+)\s(created group)\s"(.+)"',
             '(.+)\s(changed the subject)\s.+to\s"(.+)"',

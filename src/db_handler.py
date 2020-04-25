@@ -35,18 +35,18 @@ def get_emoji():
     return get_df("select * from emoji;")
 
 def get_chat_id(url):
-    return execute("select id from uploaded where url=%s;", (url))
+    return execute("select id, lang from uploaded where url=%s;", (url))
 
 def get_chat(url):
     chat_id = get_chat_id(url)
     if len(chat_id) > 0:
-        return get_df(f'select * from chat where id_chat={chat_id[0][0]};')
+        return get_df(f'select * from chat where id_chat={chat_id[0][0]};'), chat_id[0][1]
     else:
-        return pd.DataFrame()
+        return pd.DataFrame(), ''
 
-def add_chat(df, url):
-    sql = "insert into uploaded (datetime, url) values (%s, %s) returning id;"
-    id_chat = execute(sql, (datetime.now(), url))[0][0]
+def add_chat(df, lang, url):
+    sql = "insert into uploaded (datetime, lang, url) values (%s, %s, %s) returning id;"
+    id_chat = execute(sql, (datetime.now(), lang, url))[0][0]
     df.insert(0, 'id_chat', id_chat)
     db_engine = get_engine()
     df.to_sql('chat', db_engine, if_exists='append')
@@ -56,6 +56,6 @@ def reset_chat():
     sql_script = [
         "drop table if exists uploaded;",
         "drop table if exists chat;",
-        "create table uploaded (id serial primary key, datetime timestamp, url varchar);"]
+        "create table uploaded (id serial primary key, datetime timestamp, url varchar, lang varchar);"]
     for sql in sql_script:
         execute(sql, result_back=False)
