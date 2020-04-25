@@ -48,7 +48,7 @@ groupchat = html.Div([
         dbc.Navbar([
             dbc.Row([
                 html.A(
-                    dbc.Col(html.Img(src=LOGO, height="30px")), href='/'),
+                    dbc.Col(html.Img(src=LOGO, height="45px")), href='/'),
                 dbc.Col(dbc.NavbarBrand(id='navbar-brand', className='ml-2'), style={'margin-left': '10px'})],
                 align='center', no_gutters=True)], fixed='top', className='wa-navbar')]),
 
@@ -140,7 +140,7 @@ def award_list(series, n=3):
         if k > 0:
             row = html.Tr([
                 html.Td(f'{i+1}.'),
-                html.Td(j if type(j) == str else j.strftime('%d %B %Y'), className='td-content'),
+                html.Td(j if isinstance(j, str) else j.strftime('%d %B %Y'), className='td-content'),
                 html.Td('{:,}'.format(k), className='td-value'),
                 html.Td(trophy_emoji if i == 0 else '')])
             list_row.append(row)

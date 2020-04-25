@@ -5,9 +5,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from src import charts, chat_parser, layouts
-
-FROM_LANDING_PAGE = '?from=landing_page'
+from src import charts, chat_parser, layouts, settings
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 server = app.server
@@ -30,7 +28,7 @@ def display_page(pathname):
         chat_type, url_key = pathname[1:].split('/')
         page_content = layouts.groupchat if chat_type == 'groupchat' else None
         container_data_store = dash.no_update
-        if pathname.endswith(FROM_LANDING_PAGE):
+        if pathname.endswith(settings.FROM_LANDING_PAGE):
             container_data_store = dash.no_update
         else:
             url, datasets = chat_parser.load_parsed_data(url_key, 'url')
@@ -54,12 +52,12 @@ def upload_data(contents, n_click, save, url_input):
         if content_type == 'data:text/plain;base64':
             content_decoded = base64.b64decode(content)
             url, datasets = chat_parser.load_parsed_data(content_decoded, 'upload', save)
-            url = url + FROM_LANDING_PAGE
+            url = url + settings.FROM_LANDING_PAGE
             # TODO: add alert message, wrong file type, please upload txt file
     elif ctx.triggered[0]['prop_id'] == 'url-submit.n_clicks':
         url, datasets = chat_parser.load_parsed_data(url_input, 'url')
         if url != 'not_found':
-            url = url + FROM_LANDING_PAGE
+            url = url + settings.FROM_LANDING_PAGE
     return url, datasets
 
 @app.callback(

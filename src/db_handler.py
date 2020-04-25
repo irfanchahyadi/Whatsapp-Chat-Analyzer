@@ -1,11 +1,8 @@
-import random
-import string
-import json
+import random, string
 from datetime import datetime
 from sqlalchemy import create_engine
 import pandas as pd
-
-CRED_FILE = 'src/credentials.json'
+from src.settings import DB_CREDENTIALS as cred
 
 def generate_url(n):
     chat_id = ['']
@@ -15,8 +12,6 @@ def generate_url(n):
     return url
 
 def get_engine():
-    with open(CRED_FILE) as f:
-        cred = json.load(f)
     engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cred['user'], cred['pass'], cred['host'], cred['port'], cred['db']))
     return engine
 

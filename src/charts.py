@@ -1,5 +1,4 @@
-DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-HOURS = [f'0{i}:00'[-5:] for i in range(24)]
+from src.settings import DAYS, HOURS
 
 def chart1(df, interval):
     pivoted = df[[interval, 'category']].pivot_table(index=interval, columns='category', aggfunc=len, fill_value=0).reset_index()
@@ -39,13 +38,13 @@ def chart3(df):
             {'type': 'heatmap',
             'z': [[pivoted2.loc[i, j] if j in pivoted2.columns else 0 for j in HOURS] if i in pivoted2.index else [0]*24 for i in DAYS[::-1]],
             'x': HOURS,
-            'y': DAYS[::-1],
+            'y': [i[:3] for i in DAYS[::-1]],
             'xaxis': 'x',
             'yaxis': 'y2',
             'showscale': False}],
         'layout': {
             'grid': {'rows': 2, 'columns': 1},
             'height': 300,
-            'margin': {'l': 0, 'r': 70, 't': 10, 'b': 50},
+            'margin': {'l': 0, 'r': 40, 't': 10, 'b': 50},
             'yaxis': {'nticks': 7, 'side': 'right', 'domain': [0.55, 1]},
             'yaxis2': {'side': 'right', 'domain': [0, 0.53]}}}
