@@ -118,7 +118,7 @@ def extract_event(text, lang):
 def enrich(df):
     """Adding some column for analysis."""
     lang = get_language(df)
-    df['category'] = df[['contact', 'message']].apply(lambda x: get_category(x, lang), axis=1)
+    df['category'] = pd.Categorical(df[['contact', 'message']].apply(lambda x: get_category(x, lang), axis=1))
     df['clean_message'] = df[['category', 'message']].apply(clean_message, axis=1)
     df['date'] = df.datetime.dt.date
     df['year'] = df.date + pd.offsets.YearEnd(0)

@@ -110,15 +110,15 @@ groupchat = html.Div([
             dbc.Card([dbc.CardHeader(html.H6('Silent Reader')), html.Div(id='most-silent')], className='col-md'),
             dbc.Card([dbc.CardHeader(html.H6('Long Typer')), html.Div(id='most-typer')], className='col-md')], justify='around', style={'margin-top': '-10px'}),
         dbc.Row([
-            dbc.Card([dbc.CardHeader([html.H6('Emoji Fan')]), html.Div(id='')], className='col-md'),
-            dbc.Card([dbc.CardHeader([html.H6('Media Lover')]), html.Div(id='')], className='col-md'),
-            dbc.Card([dbc.CardHeader(html.H6('Location Reporter')), html.Div(id='')], className='col-md'),
-            dbc.Card([dbc.CardHeader(html.H6('Link Sharer')), html.Div(id='')], className='col-md')], justify='around', style={'margin-top': '-10px'}),
+            dbc.Card([dbc.CardHeader([html.H6('Emoji Fan')]), html.Div(id='most-emoji')], className='col-md'),
+            dbc.Card([dbc.CardHeader([html.H6('Media Lover')]), html.Div(id='most-media')], className='col-md'),
+            dbc.Card([dbc.CardHeader(html.H6('Location Reporter')), html.Div(id='most-location')], className='col-md'),
+            dbc.Card([dbc.CardHeader(html.H6('Link Sharer')), html.Div(id='most-link')], className='col-md')], justify='around', style={'margin-top': '-10px'}),
         dbc.Row([
-            dbc.Card([dbc.CardHeader([html.H6('Mentioner')]), html.Div(id='')], className='col-md'),
-            dbc.Card([dbc.CardHeader([html.H6('Recruiter')]), html.Div(id='')], className='col-md'),
-            dbc.Card([dbc.CardHeader(html.H6('')), html.Div(id='')], className='col-md'),
-            dbc.Card([dbc.CardHeader(html.H6('Inconstant')), html.Div(id='')], className='col-md')], justify='around', style={'margin-top': '-10px'})]),
+            dbc.Card([dbc.CardHeader([html.H6('Contact Sharer')]), html.Div(id='most-contact')], className='col-md'),
+            dbc.Card([dbc.CardHeader([html.H6('Mentioner')]), html.Div(id='most-mention')], className='col-md'),
+            dbc.Card([dbc.CardHeader(html.H6('Recruiter')), html.Div(id='most-add')], className='col-md'),
+            dbc.Card([dbc.CardHeader(html.H6('Inconstant')), html.Div(id='most-deleted')], className='col-md')], justify='around', style={'margin-top': '-10px'})]),
 
     html.Div(id='counter')
 ])
@@ -137,10 +137,15 @@ def award_list(series, n=3):
     trophy_emoji = '\U0001F3C6'
     list_row = []
     for i, (j, k) in enumerate(series.head(n).iteritems()):
-        row = html.Tr([
-            html.Td(f'{i+1}.'),
-            html.Td(j if type(j) == str else j.strftime('%d %b %Y'), className='td-content'),
-            html.Td('{:,}'.format(k), className='td-value'),
-            html.Td(trophy_emoji if i == 0 else '')])
-        list_row.append(row)
-    return html.Table(list_row)
+        if k > 0:
+            row = html.Tr([
+                html.Td(f'{i+1}.'),
+                html.Td(j if type(j) == str else j.strftime('%d %b %Y'), className='td-content'),
+                html.Td('{:,}'.format(k), className='td-value'),
+                html.Td(trophy_emoji if i == 0 else '')])
+            list_row.append(row)
+    if len(list_row) > 0:
+        table = html.Table(list_row)
+    else:
+        table = 'No data found'
+    return table

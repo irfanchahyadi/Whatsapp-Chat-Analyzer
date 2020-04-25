@@ -98,7 +98,9 @@ def update_dropdown_users(select_all, dropdown_users):
      Output('count-media', 'children'), Output('count-location', 'children'), Output('count-link', 'children'), Output('count-contact', 'children'),
      Output('chart-1', 'figure'), Output('chart-2', 'figure'), Output('chart-3', 'figure'),
      Output('avg-user', 'children'), Output('avg-message', 'children'), Output('avg-day', 'children'), Output('avg-month', 'children'),
-     Output('most-busy', 'children'), Output('most-active', 'children'), Output('most-silent', 'children'), Output('most-typer', 'children')],
+     Output('most-busy', 'children'), Output('most-active', 'children'), Output('most-silent', 'children'), Output('most-typer', 'children'),
+     Output('most-emoji', 'children'), Output('most-media', 'children'), Output('most-location', 'children'), Output('most-link', 'children'),
+     Output('most-contact', 'children'), Output('most-mention', 'children'), Output('most-add', 'children'), Output('most-deleted', 'children')],
     [Input('dropdown-users', 'value'), Input('time-interval1', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, interval, datasets):
@@ -132,7 +134,15 @@ def update_filter(dropdown_users, interval, datasets):
             layouts.award_list(filtered_df.groupby('date').size().sort_values(ascending=False)),
             layouts.award_list(filtered_df[filtered_df.category != 'Event'].groupby('contact').size().sort_values(ascending=False)),
             layouts.award_list(filtered_df[filtered_df.category != 'Event'].groupby('contact').size().sort_values(ascending=True)),
-            layouts.award_list(filtered_df[filtered_df.category == 'Text'].groupby('contact')['count_character'].sum().sort_values(ascending=False))
+            layouts.award_list(filtered_df[filtered_df.category == 'Text'].groupby('contact')['count_character'].sum().sort_values(ascending=False)),
+            layouts.award_list(filtered_df.groupby('contact')['count_emoji'].sum().sort_values(ascending=False)),
+            layouts.award_list(filtered_df[filtered_df.category == 'Media'].groupby('contact').size().sort_values(ascending=False)),
+            layouts.award_list(filtered_df[filtered_df.category == 'Location'].groupby('contact').size().sort_values(ascending=False)),
+            layouts.award_list(filtered_df.groupby('contact')['count_link'].sum().sort_values(ascending=False)),
+            layouts.award_list(filtered_df[filtered_df.category == 'Contact'].groupby('contact').size().sort_values(ascending=False)),
+            layouts.award_list(filtered_df.groupby('contact')['count_mention'].sum().sort_values(ascending=False)),
+            layouts.award_list(filtered_df[(filtered_df.category == 'Event') & (filtered_df.event_type == 'added')].groupby('contact').size().sort_values(ascending=False)),
+            layouts.award_list(filtered_df[(filtered_df.category == 'Deleted')].groupby('contact').size().sort_values(ascending=False)),
         ]
     return output
 
