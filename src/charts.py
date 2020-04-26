@@ -48,3 +48,14 @@ def chart3(df):
             'margin': {'l': 0, 'r': 40, 't': 10, 'b': 50},
             'yaxis': {'nticks': 7, 'side': 'right', 'domain': [0.55, 1]},
             'yaxis2': {'side': 'right', 'domain': [0, 0.53]}}}
+
+def chart4(df, interval, n):
+    pivoted = df[[interval, 'contact']].pivot_table(index=interval, columns='contact', aggfunc=len, fill_value=0).reset_index()
+    users = pivoted.sum(numeric_only=True).sort_values(ascending=False).head(n)
+    return {
+        'data': [{'x': pivoted[interval], 'y': pivoted[user], 'type': 'scatter', 'name': user} for user in users.index],
+        'layout': {
+            'height': 300,
+            'showlegend': True,
+            'legend': {'x': '1', 'y': '1', 'xanchor': 'right', 'orientation': 'h'},
+            'margin': {'l': 30, 'r': 30, 't': 10, 'b': 30}}}

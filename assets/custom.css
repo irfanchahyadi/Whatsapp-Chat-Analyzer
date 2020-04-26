@@ -3,6 +3,11 @@ body {
   margin-top: 60px;
   margin-left: 5%;
   margin-right: 5%;
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    letter-spacing: 2.5px;
 }
 
 .card  {
@@ -44,6 +49,7 @@ body {
 
 .navbar-light .navbar-brand, .navbar-light .navbar-brand:hover {
     color: #f2f2f2;
+    font-weight: 1000;
 }
 
 .row, .col {

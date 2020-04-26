@@ -72,12 +72,13 @@ groupchat = html.Div([
             dbc.CardHeader(html.H5('Time Series Chat')),
             dcc.RadioItems(id='time-interval1',
                 options=[
-                    {'label': 'Yearly  ', 'value': 'year'},
-                    {'label': 'Monthly  ', 'value': 'month'},
-                    {'label': 'Weekly  ', 'value': 'week'},
-                    {'label': 'Daily  ', 'value': 'date'}],
+                    {'label': 'Yearly', 'value': 'year'},
+                    {'label': 'Monthly', 'value': 'month'},
+                    {'label': 'Weekly', 'value': 'week'},
+                    {'label': 'Daily', 'value': 'date'}],
                 value='date', inputStyle={'margin-left': '7px', 'margin-right': '2px'}),
             dcc.Graph(id='chart-1', figure={})])),
+
     dbc.Row([
         dbc.Card(
             dbc.CardBody([
@@ -112,6 +113,18 @@ groupchat = html.Div([
             dbc.Card([dbc.CardHeader([html.H6('Mentioner')]), html.Div(id='most-mention')], className='col-md'),
             dbc.Card([dbc.CardHeader(html.H6('Recruiter')), html.Div(id='most-add')], className='col-md'),
             dbc.Card([dbc.CardHeader(html.H6('Inconstant')), html.Div(id='most-deleted')], className='col-md')], justify='around', style={'margin-top': '-10px'})]),
+
+    dbc.Card(
+        dbc.CardBody([
+            dbc.CardHeader(html.H5('Dominance')),
+            dcc.RadioItems(id='time-interval2',
+                options=[
+                    {'label': 'Yearly', 'value': 'year'},
+                    {'label': 'Monthly', 'value': 'month'},
+                    {'label': 'Weekly', 'value': 'week'},
+                    {'label': 'Daily', 'value': 'date'}],
+                value='date', inputStyle={'margin-left': '7px', 'margin-right': '2px'}),
+            dcc.Graph(id='chart-4', figure={})])),
 
     html.Div(id='counter')
 ])
