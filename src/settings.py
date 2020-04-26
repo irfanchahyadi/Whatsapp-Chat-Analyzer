@@ -10,8 +10,11 @@ DB_CREDENTIALS = {
     'db': os.getenv('DB_DATABASE')}
 
 FROM_LANDING_PAGE = '?from=landing_page'
+CHART_HEIGHT = 250
 DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 HOURS = [f'0{i}:00'[-5:] for i in range(24)]
+CONTENT = ['Contact', 'Deleted', 'Location', 'Media', 'Text']
+CATEGORIES = ['Contact', 'Deleted', 'Event', 'Location', 'Media', 'Text']
 
 PATTERN = {
     'universal': {

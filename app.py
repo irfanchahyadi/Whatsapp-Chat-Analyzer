@@ -104,7 +104,7 @@ def update_dropdown_users(select_all, dropdown_users):
      Output('most-busy', 'children'), Output('most-active', 'children'), Output('most-silent', 'children'), Output('most-typer', 'children'),
      Output('most-emoji', 'children'), Output('most-media', 'children'), Output('most-location', 'children'), Output('most-link', 'children'),
      Output('most-contact', 'children'), Output('most-mention', 'children'), Output('most-add', 'children'), Output('most-deleted', 'children'),
-     Output('chart-4', 'figure')],
+     Output('chart-4', 'figure'), Output('chart-5', 'figure')],
     [Input('dropdown-users', 'value'), Input('time-interval1', 'value'), Input('time-interval2', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, interval1, interval2, datasets):
@@ -118,7 +118,7 @@ def update_filter(dropdown_users, interval1, interval2, datasets):
     elif ctx.triggered[0]['prop_id'] == 'time-interval2.value':
         output[28] = charts.chart4(filtered_df, interval2, 5)
     else:
-        by_category = filtered_df[['contact', 'category']].pivot_table(index='contact', columns='category', aggfunc=len, fill_value=0).reindex(columns=['Contact', 'Deleted', 'Event', 'Location', 'Media', 'Text'], fill_value=0)
+        by_category = filtered_df[['contact', 'category']].pivot_table(index='contact', columns='category', aggfunc=len, fill_value=0).reindex(columns=settings.CATEGORIES, fill_value=0)
         by_column = filtered_df.groupby('contact').sum(numeric_only=True)
         output = [
             ctx.triggered[0]['prop_id'],
@@ -150,6 +150,7 @@ def update_filter(dropdown_users, interval1, interval2, datasets):
             layouts.award_list(filtered_df[(filtered_df.category == 'Event') & (filtered_df.event_type == 'added')].groupby('contact').size().sort_values(ascending=False)),
             layouts.award_list(by_category['Deleted'].sort_values(ascending=False)),
             charts.chart4(filtered_df, interval1, 5),
+            charts.chart5(filtered_df, 5),
         ]
     return output
 

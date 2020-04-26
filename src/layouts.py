@@ -116,7 +116,7 @@ groupchat = html.Div([
 
     dbc.Card(
         dbc.CardBody([
-            dbc.CardHeader(html.H5('Dominance')),
+            dbc.CardHeader(html.H5('Top 5 Dominance')),
             dcc.RadioItems(id='time-interval2',
                 options=[
                     {'label': 'Yearly', 'value': 'year'},
@@ -125,6 +125,17 @@ groupchat = html.Div([
                     {'label': 'Daily', 'value': 'date'}],
                 value='date', inputStyle={'margin-left': '7px', 'margin-right': '2px'}),
             dcc.Graph(id='chart-4', figure={})])),
+
+    dbc.Row([
+        dbc.Card(
+            dbc.CardBody([
+                dbc.CardHeader(html.H5('Top 5 Breakdown by Content')),
+                    dcc.Graph(id='chart-5', figure={})]), className='col-md-8'),
+        dbc.Card(
+            dbc.CardBody([
+                dbc.CardHeader(html.H5('Donut Chart')),
+                # dcc.Graph(id='chart-6', figure={})
+                ]), className='col-md')]),
 
     html.Div(id='counter')
 ])

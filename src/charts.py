@@ -1,4 +1,4 @@
-from src.settings import DAYS, HOURS
+from src.settings import CHART_HEIGHT, DAYS, HOURS, CATEGORIES, CONTENT
 
 def chart1(df, interval):
     pivoted = df[[interval, 'category']].pivot_table(index=interval, columns='category', aggfunc=len, fill_value=0).reset_index()
@@ -6,9 +6,9 @@ def chart1(df, interval):
         'data': [{'x': pivoted[interval], 'y': pivoted[category], 'type': 'bar', 'name': category} for category in sorted(pivoted.columns)[::-1] if category != interval],
         'layout': {
             'barmode': 'stack',
-            'height': 300,
+            'height': CHART_HEIGHT,
             'showlegend': True,
-            'legend': {'x': '1', 'y': '1', 'xanchor': 'right', 'orientation': 'h'},
+            'legend': {'x': 1, 'y': 1, 'xanchor': 'right', 'orientation': 'h'},
             'margin': {'l': 30, 'r': 30, 't': 10, 'b': 30}}}
 
 def chart2(df):
@@ -16,15 +16,15 @@ def chart2(df):
     return {
         'data':[{
             'type': 'scatterpolar',
-            'r': [pivoted.get(i, default=0) for i in DAYS],
+            'r': [pivoted.get(day, default=0) for day in DAYS],
             'theta': DAYS,
             'fill': 'toself'}],
         'layout': {
-            'height': 300,
-            'margin': {'l': 50, 'r': 60, 't': 30, 'b': 30},
+            'height': CHART_HEIGHT,
+            'margin': {'l': 50, 'r': 60, 't': 20, 'b': 20},
             'polar': {
                 'radialaxis': {'range': [0, max(pivoted)*1.1], 'nticks': 7, 'angle': 90, 'tickangle': 90},
-                'angularaxis': {'rotation': 90, 'direction': 'clockwise'}}}}
+                'angularaxis': {'rotation': 90, 'direction': 'clockwise', 'automargin': True}}}}
 
 def chart3(df):
     pivoted1 = df.groupby('hour').size()
@@ -44,10 +44,10 @@ def chart3(df):
             'showscale': False}],
         'layout': {
             'grid': {'rows': 2, 'columns': 1},
-            'height': 300,
-            'margin': {'l': 0, 'r': 40, 't': 10, 'b': 50},
-            'yaxis': {'nticks': 7, 'side': 'right', 'domain': [0.55, 1]},
-            'yaxis2': {'side': 'right', 'domain': [0, 0.53]}}}
+            'height': CHART_HEIGHT,
+            'margin': {'l': 0, 'r': 0, 't': 10, 'b': 50},
+            'yaxis': {'nticks': 7, 'side': 'right', 'domain': [0.55, 1], 'automargin': True},
+            'yaxis2': {'side': 'right', 'domain': [0, 0.53], 'automargin': True}}}
 
 def chart4(df, interval, n):
     pivoted = df[[interval, 'contact']].pivot_table(index=interval, columns='contact', aggfunc=len, fill_value=0).reset_index()
@@ -55,7 +55,20 @@ def chart4(df, interval, n):
     return {
         'data': [{'x': pivoted[interval], 'y': pivoted[user], 'type': 'scatter', 'name': user} for user in users.index],
         'layout': {
-            'height': 300,
+            'height': CHART_HEIGHT,
             'showlegend': True,
-            'legend': {'x': '1', 'y': '1', 'xanchor': 'right', 'orientation': 'h'},
+            'legend': {'x': 1, 'y': 1, 'xanchor': 'right', 'orientation': 'h'},
             'margin': {'l': 30, 'r': 30, 't': 10, 'b': 30}}}
+
+def chart5(df, n):
+    pivoted = df[['contact', 'category']].pivot_table(index='contact', columns='category', aggfunc=len, fill_value=0).reindex(columns=CATEGORIES, fill_value=0)
+    users = pivoted.sum(axis=1).sort_values(ascending=False).head(n)
+    return {
+        'data': [{'x': [pivoted[category][user] for user in reversed(users.index)], 'y': users.index, 'type': 'bar', 'orientation': 'h', 'name': category} for category in reversed(CONTENT)],
+        'layout': {
+            'barmode': 'stack',
+            'height': CHART_HEIGHT,
+            'showlegend': True,
+            'legend': {'x': 1, 'y': 1.1, 'xanchor': 'right', 'orientation': 'h'},
+            'margin': {'r': 30, 't': 10, 'b': 30, 'pad': 5},
+            'yaxis': {'automargin': True}}}
