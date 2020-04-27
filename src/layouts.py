@@ -2,12 +2,13 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
+from src import settings
 
-LOGO = '/assets/logo.png'
 
 home = html.Div([
-    html.H1('Landing Page'),
+    html.H1('Whatsapp Chat Analyzer'),
     dcc.Link('DEMO', href='/groupchat/DEMO'),
+    html.I(className='fas fa-question-circle fa-lg'),
     dbc.Card(
         dbc.CardBody([
             html.H5('Show your saved chat'),
@@ -33,22 +34,37 @@ home = html.Div([
                 html.Div(
                     dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file')),
                 html.Div(id='alert-container')
-            ])])),
+            ])]))
 ])
+
+
+def add_question(inside, tooltip_id=None):
+    style = {'display': 'inline-block', 'margin-right': '5px'}
+    try:
+        inside.style
+    except AttributeError:
+        inside.style = {}
+    inside.style.update(style)
+    result = html.Span([
+        inside, 
+        html.I(className='fas fa-question-circle fa-lg text-muted', id=tooltip_id, style={'visibility': 'hidden'}),
+        dbc.Tooltip(settings.TOOLTIPS[tooltip_id], id='tt_'+tooltip_id, target=tooltip_id, hide_arrow=True, style={'visibility': 'hidden'})
+    ])
+    return result
 
 groupchat = html.Div([
     html.Header([
         dbc.Navbar([
             dbc.Row([
                 html.A(
-                    dbc.Col(html.Img(src=LOGO, height="45px")), href='/'),
+                    dbc.Col(html.Img(src=settings.LOGO, height="45px")), href='/'),
                 dbc.Col(dbc.NavbarBrand(id='navbar-brand', className='ml-2'), style={'margin-left': '10px'})],
                 align='center', no_gutters=True)], fixed='top', className='wa-navbar')]),
 
     dbc.Col([
         dbc.Row([
-            dbc.Card([dbc.CardHeader([html.H6('Created by')]), html.Div(id='created-by')], className='col-md-3'),
-            dbc.Card([dbc.CardHeader([html.H6('Messages')]), html.Div(id='count-message')], className='col-md'),
+            dbc.Card([dbc.CardHeader([add_question(html.H6('Created by'), 'created')]), html.Div(id='created-by')], className='col-md-3'),
+            dbc.Card([dbc.CardHeader([add_question(html.H6('Messages'), 'messages')]), html.Div(id='count-message')], className='col-md'),
             dbc.Card([dbc.CardHeader(html.H6('Words')), html.Div(id='count-word')], className='col-md'),
             dbc.Card([dbc.CardHeader(html.H6('Emoji')), html.Div(id='count-emoji')], className='col-md'),
             dbc.Card([dbc.CardHeader(html.H6('Mentions')), html.Div(id='count-mention')], className='col-md')], justify='around'),
@@ -65,7 +81,8 @@ groupchat = html.Div([
                 dcc.Checklist(id='selectall-users', options=[{'label': 'Select All', 'value': 1}], value=[1])], style={'margin-right': '10px', 'align-self': 'flex-end'}),
             dbc.Col(
                 html.Div(id='dropdown-users-container', children=[
-                    dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[])]))], align='center'), className='card-filter'),
+                    dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[])])),
+            daq.BooleanSwitch(id='help-switch', on=False, color='#29b6f6')], align='center'), className='card-filter'),
 
     dbc.Card(
         dbc.CardBody([

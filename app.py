@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from src import charts, chat_parser, layouts, settings
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX, settings.FONT_AWESOME])
 server = app.server
 app.config.suppress_callback_exceptions = True
 
@@ -95,6 +95,17 @@ def update_dropdown_users(select_all, dropdown_users):
         return dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[])
     else:
         return dash.no_update
+
+@app.callback(
+    [Output(key, 'style') for key in settings.TOOLTIPS] +
+    [Output('tt_' + key, 'style') for key in settings.TOOLTIPS] +
+    [Output('tt_' + key, 'hide_arrow') for key in settings.TOOLTIPS],
+    [Input('help-switch', 'on')])
+def update_help_switch(show):
+    visibility = 'visible' if show else 'hidden'
+    output = [{'visibility': visibility}] * len(settings.TOOLTIPS) * 2 + [not show] * len(settings.TOOLTIPS)
+    return output
+
 
 @app.callback(
     [Output('counter', 'children'), Output('count-message', 'children'), Output('count-word', 'children'), Output('count-emoji', 'children'), Output('count-mention', 'children'),

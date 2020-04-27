@@ -1,7 +1,6 @@
 import os, dotenv
 
 dotenv.load_dotenv()
-
 DB_CREDENTIALS = {
     'user': os.getenv('DB_USERNAME'),
     'pass': os.getenv('DB_PASSWORD'),
@@ -9,6 +8,8 @@ DB_CREDENTIALS = {
     'port': os.getenv('DB_PORT'),
     'db': os.getenv('DB_DATABASE')}
 
+LOGO = '/assets/logo.png'
+FONT_AWESOME = 'https://use.fontawesome.com/releases/v5.10.2/css/all.css'
 FROM_LANDING_PAGE = '?from=landing_page'
 CHART_HEIGHT = 250
 DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -38,3 +39,8 @@ PATTERN = {
             '(.+)\s(changed their phone number)\s.+',
             '(.+)\s(changed to)\s(.+)',
             '(.+)\s(left)']}}
+
+TOOLTIPS = {
+    'created': 'User who created this chat group',
+    'messages': 'Count all sent message (including Media, Location, Link, Contact, and Deleted) and count deleted message'
+}
