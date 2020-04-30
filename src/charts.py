@@ -46,8 +46,8 @@ def chart3(df):
             'grid': {'rows': 2, 'columns': 1},
             'height': CHART_HEIGHT,
             'margin': {'l': 0, 'r': 0, 't': 10, 'b': 50},
-            'yaxis': {'nticks': 7, 'side': 'right', 'domain': [0.55, 1], 'automargin': True},
-            'yaxis2': {'side': 'right', 'domain': [0, 0.53], 'automargin': True}}}
+            'yaxis': {'nticks': 7, 'side': 'right', 'domain': [0.63, 1], 'automargin': True},
+            'yaxis2': {'nticks': 7, 'side': 'right', 'domain': [0, 0.6], 'automargin': True}}}
 
 def chart4(df, interval, n):
     pivoted = df[[interval, 'contact']].pivot_table(index=interval, columns='contact', aggfunc=len, fill_value=0).reset_index()

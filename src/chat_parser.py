@@ -182,7 +182,9 @@ def load_parsed_data(input_string, input_type, save=True):
         'users': users,
         'chat_name': chat_name.values[0],
         'chat_created_by': group_created['contact'].values[0],
-        'chat_created_at': group_created['datetime'].dt.strftime('%d %b %Y').values[0]
+        'chat_created_at': group_created['datetime'].dt.strftime('%d %b %Y').values[0],
+        'chat_min_date': df.datetime.min().strftime('%Y-%m-%d'),
+        'chat_max_date': df.datetime.max().strftime('%Y-%m-%d')
     }
     # TODO: create method to check Series.values is empty, to avoid IndexError: index 0 is out of bounds for axis 0 with size 0
     return '/groupchat/' + url, json.dumps(datasets)

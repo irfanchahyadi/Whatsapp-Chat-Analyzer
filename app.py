@@ -1,4 +1,5 @@
 import base64, json
+from datetime import datetime, date
 import pandas as pd
 import dash
 import dash_core_components as dcc
@@ -7,18 +8,12 @@ from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from src import charts, chat_parser, layouts, settings
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX, settings.FONT_AWESOME])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, settings.FONT_AWESOME])
 server = app.server
 app.config.suppress_callback_exceptions = True
 
-
-app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content'),
-    dcc.Loading(type='graph', fullscreen=True, children=[
-        html.Div(id='container-data-store', style={'display': 'none'}, children=[
-            dcc.Store(id='data-store')])])
-])
+app.title = 'Whatsapp Chat Analyzer'
+app.layout = layouts.base
 
 @app.callback([Output('page-content', 'children'), Output('container-data-store', 'children')], [Input('url', 'pathname')])
 def display_page(pathname):
@@ -96,10 +91,15 @@ def update_dropdown_users(select_all, dropdown_users):
     else:
         return dash.no_update
 
+@app.callback([Output('date-picker', 'min_date_allowed'), Output('date-picker', 'max_date_allowed')], [Input('date-picker', 'id')], [State('data-store', 'data')])
+def update_date_picker(id_date_picker, datasets):
+    datasets = json.loads(datasets)
+    return datasets['chat_min_date'], datasets['chat_max_date']
+
 @app.callback(
-    [Output(key, 'style') for key in settings.TOOLTIPS] +
-    [Output('tt_' + key, 'style') for key in settings.TOOLTIPS] +
-    [Output('tt_' + key, 'hide_arrow') for key in settings.TOOLTIPS],
+    [Output('help-' + key, 'style') for key in settings.TOOLTIPS] +
+    [Output('tt-' + key, 'style') for key in settings.TOOLTIPS] +
+    [Output('tt-' + key, 'hide_arrow') for key in settings.TOOLTIPS],
     [Input('help-switch', 'on')])
 def update_help_switch(show):
     visibility = 'visible' if show else 'hidden'
@@ -116,13 +116,18 @@ def update_help_switch(show):
      Output('most-emoji', 'children'), Output('most-media', 'children'), Output('most-location', 'children'), Output('most-link', 'children'),
      Output('most-contact', 'children'), Output('most-mention', 'children'), Output('most-add', 'children'), Output('most-deleted', 'children'),
      Output('chart-4', 'figure'), Output('chart-5', 'figure')],
-    [Input('dropdown-users', 'value'), Input('time-interval1', 'value'), Input('time-interval2', 'value')],
+    [Input('dropdown-users', 'value'), Input('date-picker', 'start_date'), Input('date-picker', 'end_date'), Input('time-interval1', 'value'), Input('time-interval2', 'value')],
     [State('data-store', 'data')])
-def update_filter(dropdown_users, interval1, interval2, datasets):
+def update_filter(dropdown_users, start_date_str, end_date_str, interval1, interval2, datasets):
     datasets = json.loads(datasets)
     df = pd.read_json(datasets['data'], orient='split')
-    filtered_df = df[((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0))]
-    output = [dash.no_update] * 29
+    start_date = date.min if start_date_str is None else datetime.strptime(start_date_str, '%Y-%m-%d').date()
+    end_date = date.max if end_date_str is None else datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    filtered_df = df[
+        ((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0)) &
+        (df.datetime.dt.date >= start_date) & (df.datetime.dt.date <= end_date)
+    ]
+    output = [dash.no_update] * 30
     ctx = dash.callback_context
     if ctx.triggered[0]['prop_id'] == 'time-interval1.value':
         output[9] = charts.chart1(filtered_df, interval1)
@@ -160,7 +165,7 @@ def update_filter(dropdown_users, interval1, interval2, datasets):
             layouts.award_list(by_column['count_mention'].sort_values(ascending=False)),
             layouts.award_list(filtered_df[(filtered_df.category == 'Event') & (filtered_df.event_type == 'added')].groupby('contact').size().sort_values(ascending=False)),
             layouts.award_list(by_category['Deleted'].sort_values(ascending=False)),
-            charts.chart4(filtered_df, interval1, 5),
+            charts.chart4(filtered_df, interval2, 5),
             charts.chart5(filtered_df, 5),
         ]
     return output
