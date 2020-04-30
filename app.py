@@ -74,23 +74,6 @@ def fill_dropdown_users(dropdown_users, datasets):
     ]
     return output
 
-@app.callback(Output('selectall-users-container', 'children'), [Input('dropdown-users', 'value')], [State('selectall-users', 'value')])
-def update_selectall_users(dropdown_users, select_all):
-    if len(dropdown_users) > 0 and select_all == [1]:
-        select_all_container = dcc.Checklist(id='selectall-users', options=[{'label': 'Select All', 'value': 1}], value=[])
-    elif len(dropdown_users) == 0 and select_all == []:
-        select_all_container = dcc.Checklist(id='selectall-users', options=[{'label': 'Select All', 'value': 1}], value=[1])
-    else:
-        select_all_container = dash.no_update
-    return select_all_container
-
-@app.callback(Output('dropdown-users-container', 'children'), [Input('selectall-users', 'value')], [State('dropdown-users', 'value')])
-def update_dropdown_users(select_all, dropdown_users):
-    if select_all == [1] and len(dropdown_users) > 0:
-        return dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[])
-    else:
-        return dash.no_update
-
 @app.callback([Output('date-picker', 'min_date_allowed'), Output('date-picker', 'max_date_allowed')], [Input('date-picker', 'id')], [State('data-store', 'data')])
 def update_date_picker(id_date_picker, datasets):
     datasets = json.loads(datasets)

@@ -41,6 +41,30 @@ body {
     margin-bottom: 20px;
 }
 
+.Select-placeholder {
+    padding-left: 17px;
+}
+.DateInput {
+    width: 100px;
+}
+
+.DateInput_input {
+    font-size: 1rem;
+    font-weight: 400;
+    color: inherit;
+    padding: 5px;
+    text-align: center;
+}
+
+.DateRangePickerInput__withBorder {
+    border-radius: 4px;
+    border-color: #ccc;
+}
+
+.DateRangePickerInput__showClearDates {
+    padding-right: 10px;
+}
+
 .wa-navbar {
     background-color: #1ebea5 !important;
     height: 50px;

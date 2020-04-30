@@ -41,6 +41,7 @@ PATTERN = {
             '(.+)\s(left)']}}
 
 TOOLTIPS = {
+    'save': 'Save your chat history so you can revisit using url key',
     'created': 'User who created this chat group, and when it created',
     'messages': 'Number of all sent message (including text, media, location, link, contact, and deleted) and count deleted message',
     'words': 'Number of words used on text message',

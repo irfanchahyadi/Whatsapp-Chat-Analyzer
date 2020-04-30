@@ -12,6 +12,22 @@ base = html.Div([
             dcc.Store(id='data-store')])])
 ])
 
+
+def add_help(inside, tooltip_id=None, hide=True):
+    style = {'display': 'inline-block', 'margin-right': '5px'}
+    visibility = 'hidden' if hide else 'visible'
+    try:
+        inside.style
+    except AttributeError:
+        inside.style = {}
+    inside.style.update(style)
+    result = html.Span([
+        inside,
+        html.I(className='fas fa-question-circle fa-sm text-muted', id='help-' + tooltip_id, style={'visibility': visibility}),
+        dbc.Tooltip(settings.TOOLTIPS[tooltip_id], id='tt-' + tooltip_id, target='help-' + tooltip_id, hide_arrow=hide, style={'visibility': visibility, 'z-index': 9999})
+    ])
+    return result
+
 home = html.Div([
     html.H1('Whatsapp Chat Analyzer'),
     dcc.Link('DEMO', href='/groupchat/DEMO'),
@@ -35,29 +51,15 @@ home = html.Div([
             dbc.Col([
                 dbc.Row([
                     html.Div([
-                        'Save: ',
-                        daq.BooleanSwitch(id='save-switch', on=True, color='#29b6f6', style={'display': 'inline-block', 'margin-right': '10px'})])],
-                    style={'display': 'block', 'text-align': 'end'}),
+                        add_help(html.Div('Save '), 'save', hide=False),
+                        html.Div(':', style={'margin-right': '10px'}),
+                        daq.BooleanSwitch(id='save-switch', on=True, color='#29b6f6')], style={'display': 'flex', 'margin-left': 'auto', 'margin-right': '0px', 'align-items': 'center'})], style={'margin-bottom': '5px'}),
                 html.Div(
                     dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file')),
                 html.Div(id='alert-container')
             ])]))
 ])
 
-
-def add_help(inside, tooltip_id=None):
-    style = {'display': 'inline-block', 'margin-right': '5px'}
-    try:
-        inside.style
-    except AttributeError:
-        inside.style = {}
-    inside.style.update(style)
-    result = html.Span([
-        inside, 
-        html.I(className='fas fa-question-circle fa-sm text-muted', id='help-' + tooltip_id, style={'visibility': 'hidden'}),
-        dbc.Tooltip(settings.TOOLTIPS[tooltip_id], id='tt-' + tooltip_id, target='help-' + tooltip_id, hide_arrow=True, style={'visibility': 'hidden', 'z-index': 9999})
-    ])
-    return result
 
 groupchat = html.Div([
     html.Header([
@@ -84,17 +86,16 @@ groupchat = html.Div([
 
     dbc.Card(
         dbc.Col([
-        dbc.Row([
-            html.Div(id='selectall-users-container', children=[
-                dcc.Checklist(id='selectall-users', options=[{'label': 'Select All', 'value': 1}], value=[1])], style={'margin-right': '10px', 'align-self': 'flex-end'}),
-            dbc.Col(
-                html.Div(id='dropdown-users-container', children=[
-                    dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[])])),
-            daq.BooleanSwitch(id='help-switch', on=False, color='#29b6f6')], align='center'),
-        dbc.Row([
-			dcc.DatePickerRange(id='date-picker', stay_open_on_select=True, display_format='DD/MM/YYYY', clearable=True)
-            ])
-        ]), className='card-filter'),
+            dbc.Row([
+                html.Div('Filter User :', style={'padding-left': '0px', 'margin-right': '10px'}),
+                dbc.Col(
+                    dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[]))], align='center'),
+            dbc.Row([
+                html.Div('Filter Date :', style={'padding-left': '0px', 'margin-right': '10px'}),
+                dcc.DatePickerRange(id='date-picker', display_format='DD/MM/YYYY', clearable=True),
+                html.Div(['Show help :', daq.BooleanSwitch(id='help-switch', on=False, color='#29b6f6', style={'margin-left': '10px'})], style={'margin-left': 'auto', 'margin-right': '0px', 'display': 'inherit'})
+                ], align='center', style={'margin-top': '5px'})
+            ]), className='card-filter'),
 
     dbc.Card(
         dbc.CardBody([
