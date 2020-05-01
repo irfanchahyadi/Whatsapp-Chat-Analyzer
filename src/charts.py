@@ -62,9 +62,9 @@ def chart4(df, interval, n):
 
 def chart5(df, n):
     pivoted = df[['contact', 'category']].pivot_table(index='contact', columns='category', aggfunc=len, fill_value=0).reindex(columns=CATEGORIES, fill_value=0)
-    users = pivoted.sum(axis=1).sort_values(ascending=False).head(n)
+    users = pivoted.sum(axis=1).sort_values(ascending=False).head(n).sort_values()
     return {
-        'data': [{'x': [pivoted[category][user] for user in reversed(users.index)], 'y': users.index, 'type': 'bar', 'orientation': 'h', 'name': category} for category in reversed(CONTENT)],
+        'data': [{'x': [pivoted[category][user] for user in users.index], 'y': users.index, 'type': 'bar', 'orientation': 'h', 'name': category} for category in reversed(CONTENT)],
         'layout': {
             'barmode': 'stack',
             'height': CHART_HEIGHT,

@@ -62,7 +62,12 @@ body {
 }
 
 .DateRangePickerInput__showClearDates {
-    padding-right: 10px;
+    padding-right: 30px;
+}
+
+.DateRangePickerInput_clearDates {
+    right: -10px;
+    top: 17px
 }
 
 .wa-navbar {

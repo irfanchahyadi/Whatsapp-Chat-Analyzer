@@ -5,15 +5,23 @@ import pandas as pd
 import numpy as np
 from src import db_handler as db
 from src.settings import PATTERN
+from src.emoji import EMOJI, DEMOJI, CLEANER
 
-def replace_emoji(text, emoji):
+emoji_pattern = re.compile('|'.join(sorted([re.escape(emo) for emo in EMOJI], key=len, reverse=True)))
+demoji_pattern = re.compile('|'.join(DEMOJI))
+cleaner_pattern = re.compile('|'.join([re.escape(c) for c in CLEANER]))
+
+def decode_emoji(text):
     """Convert unicode character of emoji into string representation."""
-    new_text = text
-    for idx, emo in filter(lambda x: x[1] in text, emoji):
-        new_text = new_text.replace(emo, f'<Emoji_{idx}>')
-    for i in re.findall('(\\\\ufe0.|\\\\u206[89])', new_text):
-        new_text = new_text.replace(i, '')
-    return new_text
+    replaced = emoji_pattern.sub(lambda x: '<Emoji_' + str(EMOJI.get(x.group(0))) + '>', text)
+    cleaned = cleaner_pattern.sub('', replaced)
+    if cleaned[-1:] == '\n':
+        cleaned = cleaned[:-1]
+    return cleaned
+
+def encode_emoji(text):
+    return demoji_pattern.sub(lambda x: DEMOJI.get(x.group(0)), text)
+
 
 def detect_pattern():
     """Return python date-format pattern from first line of chat."""
@@ -122,9 +130,7 @@ def enrich(df, lang):
 
 def parse(chat):
     """Parse exported chat and define date, contact, message for each message."""
-    emoji = db.get_emoji()[['index', 'unicode']].values.tolist()
-
-    chat = chat.decode().encode('unicode_escape').decode('utf-8')
+    chat = chat.decode('utf-8')
     lang = detect_language(chat)
 
     if lang == 'not_supported':
@@ -145,14 +151,12 @@ def parse(chat):
                 contact, msg = msg_splitted
             else:
                 contact, msg = np.nan, msg_splitted[0]
-            if '\\U000' in msg or '\\u' in msg:
-                msg = replace_emoji(msg, emoji)
-            if msg[-2:] == '\\n':
-                msg = msg[:-2]
+            # if '\\U000' in msg or '\\u' in msg:
+            msg = decode_emoji(msg)
             data.append({
                 'datetime': date,
                 'contact': contact,
-                'message': msg.encode().decode('unicode_escape')})
+                'message': msg.encode('unicode_escape').decode()})
         df = pd.DataFrame(data)
     return df, lang
 
@@ -180,7 +184,7 @@ def load_parsed_data(input_string, input_type, save=True):
     datasets = {
         'data': df.to_json(date_format='iso', orient='split'),
         'users': users,
-        'chat_name': chat_name.values[0],
+        'chat_name': encode_emoji(chat_name.values[0]),
         'chat_created_by': group_created['contact'].values[0],
         'chat_created_at': group_created['datetime'].dt.strftime('%d %b %Y').values[0],
         'chat_min_date': df.datetime.min().strftime('%Y-%m-%d'),
