@@ -163,8 +163,8 @@ groupchat = html.Div([
                     dcc.Graph(id='chart-5', figure={})]), className='col-md-8'),
         dbc.Card(
             dbc.CardBody([
-                dbc.CardHeader(html.H5('Donut Chart')),
-                # dcc.Graph(id='chart-6', figure={})
+                dbc.CardHeader(html.H5('Emoji Used')),
+                dcc.Graph(id='chart-6', figure={})
                 ]), className='col-md')]),
 
     html.Div(id='counter')

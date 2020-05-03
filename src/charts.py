@@ -1,3 +1,5 @@
+from collections import Counter
+from src.chat_parser import encode_emoji
 from src.settings import CHART_HEIGHT, DAYS, HOURS, CATEGORIES, CONTENT
 
 def chart1(df, interval):
@@ -72,3 +74,31 @@ def chart5(df, n):
             'legend': {'x': 1, 'y': 1.1, 'xanchor': 'right', 'orientation': 'h'},
             'margin': {'r': 30, 't': 10, 'b': 30, 'pad': 5},
             'yaxis': {'automargin': True}}}
+
+def chart6(df, n):
+    counter = Counter(df[df.count_emoji > 0]['list_emoji'].sum())
+    n_most = counter.most_common(n)
+    other = 0
+    for emoji, i in counter.most_common():
+        if (emoji, i) not in n_most:
+            other += i
+    if other:
+        n_most.append(('other', other))
+    return {
+        'data': [{
+            'values': [n for emoji, n in n_most],
+            'labels': [encode_emoji(emoji) for emoji, n in n_most],
+            'type': 'pie',
+            'hole': 0.4,
+            'sort': False,
+            'textinfo': 'label+percent',
+            'textposition': 'inside',
+            'insidetextfont': {'size': 30},
+            'insidetextorientation': 'horizontal',
+            'hoverinfo': 'label',
+            'hoverlabel': {'font': {'size': 70}},
+            'automargin': True}],
+        'layout': {
+            'height': CHART_HEIGHT,
+            'showlegend': False,
+            'margin': {'r': 0, 'l': 0, 't': 0, 'b': 20, 'pad': 0}}}

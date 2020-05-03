@@ -98,7 +98,7 @@ def update_help_switch(show):
      Output('most-busy', 'children'), Output('most-active', 'children'), Output('most-silent', 'children'), Output('most-typer', 'children'),
      Output('most-emoji', 'children'), Output('most-media', 'children'), Output('most-location', 'children'), Output('most-link', 'children'),
      Output('most-contact', 'children'), Output('most-mention', 'children'), Output('most-add', 'children'), Output('most-deleted', 'children'),
-     Output('chart-4', 'figure'), Output('chart-5', 'figure')],
+     Output('chart-4', 'figure'), Output('chart-5', 'figure'), Output('chart-6', 'figure')],
     [Input('dropdown-users', 'value'), Input('date-picker', 'start_date'), Input('date-picker', 'end_date'), Input('time-interval1', 'value'), Input('time-interval2', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, start_date_str, end_date_str, interval1, interval2, datasets):
@@ -110,7 +110,7 @@ def update_filter(dropdown_users, start_date_str, end_date_str, interval1, inter
         ((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0)) &
         (df.datetime.dt.date >= start_date) & (df.datetime.dt.date <= end_date)
     ]
-    output = [dash.no_update] * 30
+    output = [dash.no_update] * 31
     ctx = dash.callback_context
     if ctx.triggered[0]['prop_id'] == 'time-interval1.value':
         output[9] = charts.chart1(filtered_df, interval1)
@@ -150,6 +150,7 @@ def update_filter(dropdown_users, start_date_str, end_date_str, interval1, inter
             layouts.award_list(by_category['Deleted'].sort_values(ascending=False)),
             charts.chart4(filtered_df, interval2, 5),
             charts.chart5(filtered_df, 5),
+            charts.chart6(filtered_df, 10)
         ]
     return output
 
