@@ -4,11 +4,16 @@ from sqlalchemy import create_engine
 import pandas as pd
 from src.settings import DB_CREDENTIALS as cred
 
-def generate_url(n):
-    chat_id = ['']
-    while len(chat_id) > 0:
-        url = ''.join(random.choices(string.ascii_uppercase + string.digits, k=n))
-        chat_id = get_chat_id(url)
+def generate_url(n, unique=True):
+    def rand_url(n):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=n))
+    if unique:
+        chat_id = ['']
+        while len(chat_id) > 0:
+            url = rand_url(n)
+            chat_id = get_chat_id(url)
+    else:
+        url = rand_url(n)
     return url
 
 def get_engine():
@@ -30,9 +35,6 @@ def execute(sql, params=None, result_back=True):
         if result_back:
             res = [i for i in res]
     return res
-
-def get_emoji():
-    return get_df("select * from emoji;")
 
 def get_chat_id(url):
     return execute("select id, lang from uploaded where url=%s;", (url))

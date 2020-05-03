@@ -163,7 +163,7 @@ def parse(chat):
 def load_parsed_data(input_string, input_type, save=True):
     if input_type == 'upload':
         df, lang = parse(input_string)
-        url = db.generate_url(10)
+        url = db.generate_url(10, unique=save)
         if save and not df.empty:
             db.reset_chat() # TODO: delete this for production
             url = db.add_chat(df, lang, url)

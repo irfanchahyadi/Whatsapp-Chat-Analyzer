@@ -53,7 +53,7 @@ home = html.Div([
                     html.Div([
                         add_help(html.Div('Save '), 'save', hide=False),
                         html.Div(':', style={'margin-right': '10px'}),
-                        daq.BooleanSwitch(id='save-switch', on=True, color='#29b6f6')], style={'display': 'flex', 'margin-left': 'auto', 'margin-right': '0px', 'align-items': 'center'})], style={'margin-bottom': '5px'}),
+                        daq.BooleanSwitch(id='save-switch', on=False, color='#29b6f6', disabled=True)], style={'display': 'flex', 'margin-left': 'auto', 'margin-right': '0px', 'align-items': 'center'})], style={'margin-bottom': '5px'}),
                 html.Div(
                     dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file')),
                 html.Div(id='alert-container')
