@@ -1,5 +1,6 @@
 import base64, json
 from datetime import datetime, date
+from collections import Counter
 import pandas as pd
 import dash
 import dash_core_components as dcc
@@ -98,6 +99,7 @@ def update_help_switch(show):
      Output('most-busy', 'children'), Output('most-active', 'children'), Output('most-silent', 'children'), Output('most-typer', 'children'),
      Output('most-emoji', 'children'), Output('most-media', 'children'), Output('most-location', 'children'), Output('most-link', 'children'),
      Output('most-contact', 'children'), Output('most-mention', 'children'), Output('most-add', 'children'), Output('most-deleted', 'children'),
+     Output('most-domain', 'children'),
      Output('chart-4', 'figure'), Output('chart-5', 'figure'), Output('chart-6', 'figure')],
     [Input('dropdown-users', 'value'), Input('date-picker', 'start_date'), Input('date-picker', 'end_date'), Input('time-interval1', 'value'), Input('time-interval2', 'value')],
     [State('data-store', 'data')])
@@ -110,15 +112,16 @@ def update_filter(dropdown_users, start_date_str, end_date_str, interval1, inter
         ((df.contact.isin(dropdown_users)) | (len(dropdown_users) == 0)) &
         (df.datetime.dt.date >= start_date) & (df.datetime.dt.date <= end_date)
     ]
-    output = [dash.no_update] * 31
+    output = [dash.no_update] * 32
     ctx = dash.callback_context
     if ctx.triggered[0]['prop_id'] == 'time-interval1.value':
         output[9] = charts.chart1(filtered_df, interval1)
     elif ctx.triggered[0]['prop_id'] == 'time-interval2.value':
-        output[28] = charts.chart4(filtered_df, interval2, 5)
+        output[29] = charts.chart4(filtered_df, interval2, 5)
     else:
         by_category = filtered_df[['contact', 'category']].pivot_table(index='contact', columns='category', aggfunc=len, fill_value=0).reindex(columns=settings.CATEGORIES, fill_value=0)
         by_column = filtered_df.groupby('contact').sum(numeric_only=True)
+        by_domain = Counter(df[df.count_link > 0].list_link.sum())
         output = [
             ctx.triggered[0]['prop_id'],
             '{:,} sent, {:,} deleted'.format(by_category.sum().sum() - by_category['Event'].sum(), by_category['Deleted'].sum()),
@@ -148,6 +151,7 @@ def update_filter(dropdown_users, start_date_str, end_date_str, interval1, inter
             layouts.award_list(by_column['count_mention'].sort_values(ascending=False)),
             layouts.award_list(filtered_df[(filtered_df.category == 'Event') & (filtered_df.event_type == 'added')].groupby('contact').size().sort_values(ascending=False)),
             layouts.award_list(by_category['Deleted'].sort_values(ascending=False)),
+            layouts.award_list(by_domain),
             charts.chart4(filtered_df, interval2, 5),
             charts.chart5(filtered_df, 5),
             charts.chart6(filtered_df, 10)
@@ -155,4 +159,4 @@ def update_filter(dropdown_users, start_date_str, end_date_str, interval1, inter
     return output
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=False)

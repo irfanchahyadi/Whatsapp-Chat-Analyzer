@@ -142,7 +142,12 @@ groupchat = html.Div([
             dbc.Card([dbc.CardHeader(add_help(html.H6('Contact Sharer'), 'contact-sharer')), html.Div(id='most-contact')], className='col-md'),
             dbc.Card([dbc.CardHeader(add_help(html.H6('Mentioner'), 'mentioner')), html.Div(id='most-mention')], className='col-md'),
             dbc.Card([dbc.CardHeader(add_help(html.H6('Recruiter'), 'recruiter')), html.Div(id='most-add')], className='col-md'),
-            dbc.Card([dbc.CardHeader(add_help(html.H6('Inconstant'), 'inconstant')), html.Div(id='most-deleted')], className='col-md')], justify='around', style={'margin-top': '-10px'})]),
+            dbc.Card([dbc.CardHeader(add_help(html.H6('Inconstant'), 'inconstant')), html.Div(id='most-deleted')], className='col-md')], justify='around', style={'margin-top': '-10px'}),
+        dbc.Row([
+            dbc.Card([dbc.CardHeader(add_help(html.H6('Favorite Domain'), 'favorite-domain')), html.Div(id='most-domain')], className='col-md'),
+            dbc.Card([dbc.CardHeader(add_help(html.H6(''), 'favorite-domain')), html.Div(id='most-')], className='col-md'),
+            dbc.Card([dbc.CardHeader(add_help(html.H6(''), 'favorite-domain')), html.Div(id='most-')], className='col-md'),
+            dbc.Card([dbc.CardHeader(add_help(html.H6(''), 'favorite-domain')), html.Div(id='most-')], className='col-md')], justify='around', style={'margin-top': '-10px'})]),
 
     dbc.Card(
         dbc.CardBody([
@@ -183,7 +188,11 @@ page_404 = html.Div([
 def award_list(series, n=3):
     trophy_emoji = '\U0001F3C6'
     list_row = []
-    for i, (j, k) in enumerate(series.head(n).iteritems()):
+    try:
+        iterable = series.head(n).iteritems()
+    except AttributeError:
+        iterable = series.most_common(n)
+    for i, (j, k) in enumerate(iterable):
         if k > 0:
             row = html.Tr([
                 html.Td(f'{i+1}.'),

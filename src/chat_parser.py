@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 from src import db_handler as db
-from src.settings import LANGUAGE, PATTERN
+from src.settings import LANGUAGE, PATTERN, LINK_LOCATION
 from src.emoji import EMOJI, DEMOJI, CLEANER
 
 emoji_pattern = re.compile('|'.join(sorted([re.escape(emo) for emo in EMOJI], key=len, reverse=True)))
@@ -78,11 +78,10 @@ def find_link(x):
     list_link = []
     if category == 'Text':
         for link in re.findall(get_pattern('link'), message):
-            if link[-1] in ['.', ',']:
-                temp = link[:-1]
-            else:
-                temp = link
-            list_link.append(temp)
+            temp = link[:-1] if link[-1] in ['.', ','] else link
+            temp = temp[2:] if temp[:2] in ['m.'] else temp
+            if temp not in LINK_LOCATION:
+                list_link.append(temp)
     return list_link
 
 def get_category(x, lang):

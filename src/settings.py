@@ -17,7 +17,9 @@ DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satur
 HOURS = [f'0{i}:00'[-5:] for i in range(24)]
 CONTENT = ['Contact', 'Deleted', 'Location', 'Media', 'Text']
 CATEGORIES = ['Contact', 'Deleted', 'Event', 'Location', 'Media', 'Text']
-RE_LINK = '(?:(?:(?:https|http|ftp):\/\/(?:www\.)?)|(?:www\.))\S+\.\S+'
+RE_LINK = '(?:(?:(?:https|http|ftp):\/\/(?:www\.)?)|(?:www\.))((?:[\w\-_]+?\.)?(?:[\w\-_]+?\.)?[\w\-_]+?\.\w+)\S*'
+LINK_LOCATION = ['facebook.com', 'maps.google.com', 'foursquare.com']
+
 
 LANGUAGE = {
     'en': {
@@ -106,6 +108,7 @@ TOOLTIPS = {
     'location-reporter': 'User who share the most location (gps and live share)',
     'link-sharer': 'User who share the most link on text message',
     'contact-sharer': 'User who share the most contact (vcf)',
+    'favorite-domain': 'Most shared link domain',
     'mentioner': 'User who sent the most mention',
     'recruiter': 'User who invite the most new member to group',
     'inconstant': 'User who frequently send and delete message',
