@@ -12,7 +12,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, settings.F
 server = app.server
 app.config.suppress_callback_exceptions = True
 
-app.title = 'Whatsapp Chat Analyzer'
+app.title = settings.APP_NAME
 app.layout = layouts.base
 
 @app.callback([Output('page-content', 'children'), Output('container-data-store', 'children')], [Input('url', 'pathname')])
@@ -47,8 +47,8 @@ def upload_data(contents, n_click, save, url_input):
             content_decoded = base64.b64decode(content)
             url, datasets = chat_parser.load_parsed_data(content_decoded, 'upload', save)
             if url == 'not_supported':
-                supported_language = ', '.join([settings.PATTERN[i]['language'] for i in list(settings.PATTERN.keys())[1:]])
-                alert = dbc.Alert('Language not supported. Currently support: {} language.'.format(supported_language), dismissable=True, color='danger')
+                supported_language = ', '.join([lang['language'] for lang in settings.LANGUAGE.values()])
+                alert = dbc.Alert('Language not supported. Currently supported languages: {}.'.format(supported_language), dismissable=True, color='danger')
                 url = dash.no_update
             else:
                 url = url + settings.FROM_LANDING_PAGE
@@ -89,7 +89,7 @@ def update_help_switch(show):
     output = [{'visibility': visibility}] * len(settings.TOOLTIPS) * 2 + [not show] * len(settings.TOOLTIPS)
     return output
 
-
+# TODO: split this big callback to some smaller callback, for better performance when deploy on server with >1 worker
 @app.callback(
     [Output('counter', 'children'), Output('count-message', 'children'), Output('count-word', 'children'), Output('count-emoji', 'children'), Output('count-mention', 'children'),
      Output('count-media', 'children'), Output('count-location', 'children'), Output('count-link', 'children'), Output('count-contact', 'children'),

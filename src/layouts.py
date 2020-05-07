@@ -29,7 +29,7 @@ def add_help(inside, tooltip_id=None, hide=True):
     return result
 
 home = html.Div([
-    html.H1('Whatsapp Chat Analyzer'),
+    html.H1(settings.APP_NAME),
     dcc.Link('DEMO', href='/groupchat/DEMO'),
     html.I(className='fas fa-question-circle fa-lg'),
     dbc.Card(
@@ -163,7 +163,7 @@ groupchat = html.Div([
                     dcc.Graph(id='chart-5', figure={})]), className='col-md-8'),
         dbc.Card(
             dbc.CardBody([
-                dbc.CardHeader(html.H5('Emoji Used')),
+                dbc.CardHeader(html.H5('Top 10 Emoji Used')),
                 dcc.Graph(id='chart-6', figure={})
                 ]), className='col-md')]),
 

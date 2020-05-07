@@ -4,12 +4,26 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 from src import db_handler as db
-from src.settings import PATTERN
+from src.settings import LANGUAGE, PATTERN
 from src.emoji import EMOJI, DEMOJI, CLEANER
 
 emoji_pattern = re.compile('|'.join(sorted([re.escape(emo) for emo in EMOJI], key=len, reverse=True)))
 demoji_pattern = re.compile('|'.join(DEMOJI))
 cleaner_pattern = re.compile('|'.join([re.escape(c) for c in CLEANER]))
+
+def get_pattern(key, lang='en'):
+    """Provide regex pattern for emoji, link, mention, media, location, contact, deleted and events."""
+    re_patterns = PATTERN[key]
+    if isinstance(re_patterns, list):
+        re_patterns = [re_pattern.format(**LANGUAGE[lang]) for re_pattern in re_patterns]
+    else:
+        re_patterns = re_patterns.format(**LANGUAGE[lang])
+    return re_patterns
+
+def translate_event_type(event_type, lang):
+    """Translate non english event type to standard english event type."""
+    event_index = {v: k for k, v in LANGUAGE[lang].items()}[event_type]
+    return LANGUAGE['en'][event_index]
 
 def decode_emoji(text):
     """Convert unicode character of emoji into string representation."""
@@ -20,12 +34,8 @@ def decode_emoji(text):
     return cleaned
 
 def encode_emoji(text):
+    """Convert emoji string representation to unicode character."""
     return demoji_pattern.sub(lambda x: DEMOJI.get(x.group(0)), text)
-
-
-def detect_pattern():
-    """Return python date-format pattern from first line of chat."""
-    return '%m/%d/%y, %H:%M - '
 
 def convert_to_re_pattern(pattern):
     """Convert python date-format pattern into regular expression pattern."""
@@ -44,19 +54,20 @@ def convert_to_re_pattern(pattern):
     return re_pattern
 
 def detect_language(chat):
-    for lang in list(PATTERN.keys())[1:]:
-        if re.match(PATTERN[lang]['events'][0], chat):
+    """Detect android system language when exporting chat history, affect date format, event type, and non text object declaration."""
+    for lang in LANGUAGE:
+        if re.match(get_pattern('events', lang)[0], chat):
             return lang
     return 'not_supported'
 
 def clean_message(x):
-    """Remove newline, emoji, and media from message."""
+    """Remove newline, emoji, link, mention, and other non text object from message."""
     category, message = x
     if category == 'Text':
         message = message.replace('\n', ' ')
-        message = re.sub(PATTERN['universal']['emoji'], '', message)
-        message = re.sub(PATTERN['universal']['link'], '', message)
-        message = re.sub(PATTERN['universal']['mention'], '', message)
+        message = re.sub(get_pattern('emoji'), '', message)
+        message = re.sub(get_pattern('link'), '', message)
+        message = re.sub(get_pattern('mention'), '', message)
     else:
         message = ''
     return message
@@ -66,7 +77,7 @@ def find_link(x):
     category, message = x
     list_link = []
     if category == 'Text':
-        for link in re.findall(PATTERN['universal']['link'], message):
+        for link in re.findall(get_pattern('link'), message):
             if link[-1] in ['.', ',']:
                 temp = link[:-1]
             else:
@@ -75,36 +86,42 @@ def find_link(x):
     return list_link
 
 def get_category(x, lang):
+    """Define category (Event, Media, Location, Contact, Deleted, and Text) for each message."""
     contact, message = x
     if pd.isna(contact):
         return 'Event'
-    elif re.match(PATTERN[lang]['media'], message):
+    elif re.match(get_pattern('media', lang), message):
         return 'Media'
-    elif re.match(PATTERN[lang]['location'].format(PATTERN['universal']['link']), message):
+    elif re.match(get_pattern('location', lang), message):
         return 'Location'
-    elif re.match(PATTERN[lang]['contact'], message):
+    elif re.match(get_pattern('contact', lang), message):
         return 'Contact'
-    elif re.match(PATTERN[lang]['deleted'], message):
+    elif re.match(get_pattern('deleted', lang), message):
         return 'Deleted'
     else:
         return 'Text'
 
 def extract_event(text, lang):
-    for event in PATTERN[lang]['events']:
+    """Define subject, type, and target for every event."""
+    for event in get_pattern('events', lang):
         match = re.match(event, text)
         if match:
             matchs = match.groups()
             if len(matchs) == 3:
-                contact, message, target = matchs
+                contact, event_type, target = matchs
             elif len(matchs) == 2:
-                contact, message, target = matchs[0], matchs[1], np.nan
+                contact, event_type, target = matchs[0], matchs[1], np.nan
             else:
-                contact, message, target = np.nan, matchs[0], np.nan
-            return contact, message, target
+                contact, event_type, target = np.nan, matchs[0], np.nan
+            if lang != 'en':
+                event_type = translate_event_type(event_type, lang)
+            if isinstance(contact, str):
+                contact = contact.replace('\\u200e', '')
+            return contact, event_type, target
     return np.nan, text, np.nan
 
 def enrich(df, lang):
-    """Adding some column for analysis."""
+    """Adding some column for analysis purpose."""
     df['category'] = pd.Categorical(df[['contact', 'message']].apply(lambda x: get_category(x, lang), axis=1))
     df['clean_message'] = df[['category', 'message']].apply(clean_message, axis=1)
     df['date'] = df.datetime.dt.date
@@ -113,9 +130,9 @@ def enrich(df, lang):
     df['week'] = df.date + pd.offsets.Week(weekday=6)
     df['day'] = pd.Categorical(df.datetime.dt.strftime('%A'))
     df['hour'] = pd.Categorical(df.datetime.apply(lambda x: x.strftime('%H:00')))
-    df['list_emoji'] = df.message.apply(lambda x: re.findall(PATTERN['universal']['emoji'], x))
+    df['list_emoji'] = df.message.apply(lambda x: re.findall(get_pattern('emoji'), x))
     df['list_link'] = df[['category', 'message']].apply(find_link, axis=1)
-    df['list_mention'] = df.message.apply(lambda x: re.findall(PATTERN['universal']['mention'], x))
+    df['list_mention'] = df.message.apply(lambda x: re.findall(get_pattern('mention'), x))
     df['list_words'] = df.clean_message.apply(lambda x: re.findall('\w+', x))
     df['count_emoji'] = df.list_emoji.apply(len)
     df['count_link'] = df.list_link.apply(len)
@@ -136,7 +153,7 @@ def parse(chat):
     if lang == 'not_supported':
         df = pd.DataFrame()
     else:
-        pattern = PATTERN[lang]['date'] + ' - '
+        pattern = LANGUAGE[lang]['date'] + ' - '
         re_pattern = convert_to_re_pattern(pattern)
 
         dates = re.findall(re_pattern, chat)
@@ -151,7 +168,6 @@ def parse(chat):
                 contact, msg = msg_splitted
             else:
                 contact, msg = np.nan, msg_splitted[0]
-            # if '\\U000' in msg or '\\u' in msg:
             msg = decode_emoji(msg)
             data.append({
                 'datetime': date,
@@ -161,6 +177,7 @@ def parse(chat):
     return df, lang
 
 def load_parsed_data(input_string, input_type, save=True):
+    """Grab chat data, parse, enrich, and store information to client side."""
     if input_type == 'upload':
         df, lang = parse(input_string)
         url = db.generate_url(10, unique=save)
@@ -177,7 +194,7 @@ def load_parsed_data(input_string, input_type, save=True):
     df = enrich(df, lang)
     # TODO: support for both private & group chat
     group_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
-    chat_name = df[(df.category == 'Event') & (df.event_type.isin(['created group', 'changed the subject']))].tail(1)['event_target']
+    chat_name = df[(df.category == 'Event') & (df.event_type.isin(['created group', 'changed the subject from']))].tail(1)['event_target']
     users = sorted(filter(lambda x: pd.notna(x) and x != 'You', df.contact.unique().tolist()))
     df = df.drop(group_created.index)
     df = df.drop(['message', 'clean_message'], axis=1)

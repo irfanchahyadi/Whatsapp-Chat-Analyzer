@@ -8,6 +8,7 @@ DB_CREDENTIALS = {
     'port': os.getenv('DB_PORT'),
     'db': os.getenv('DB_DATABASE')}
 
+APP_NAME = 'Whatsapp Chat Analyzer'
 LOGO = '/assets/logo.png'
 FONT_AWESOME = 'https://use.fontawesome.com/releases/v5.10.2/css/all.css'
 FROM_LANDING_PAGE = '?from=landing_page'
@@ -16,29 +17,66 @@ DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satur
 HOURS = [f'0{i}:00'[-5:] for i in range(24)]
 CONTENT = ['Contact', 'Deleted', 'Location', 'Media', 'Text']
 CATEGORIES = ['Contact', 'Deleted', 'Event', 'Location', 'Media', 'Text']
+RE_LINK = '(?:(?:(?:https|http|ftp):\/\/(?:www\.)?)|(?:www\.))\S+\.\S+'
 
-PATTERN = {
-    'universal': {
-        'emoji': '<(?:Emoji)(?:[^>]+)>',
-        'link': '(?:(?:(?:https|http|ftp):\/\/(?:www\.)?)|(?:www\.))\S+\.\S+',
-        'mention': '@\d+'},
+LANGUAGE = {
     'en': {
         'language': 'English',
         'date': '%m/%d/%y, %H:%M',
-        'media': '<(?:Media)(?:[^>]+)>',
-        'location': '(?:live location shared|(?:location:\s{}))',
-        'contact': '^.+\.(vcf \(file attached\))',
-        'deleted': '(This message was deleted|You deleted this message)',
-        'events': [
-            '.+\s(Messages to this group are now secured with end-to-end encryption.)\s.+',
-            "^(You're now an admin)",
-            '(.+)\s(created group)\s"(.+)"',
-            '(.+)\s(changed the subject)\s.+to\s"(.+)"',
-            "(.+)\s(changed this group's icon)",
-            '(.+)\s(added)\s(.+)',
-            '(.+)\s(changed their phone number)\s.+',
-            '(.+)\s(changed to)\s(.+)',
-            '(.+)\s(left)']}}
+        'media': 'Media omitted',
+        'location': 'live location shared',
+        'location2': 'location',
+        'contact': 'file attached',
+        'deleted': 'This message was deleted',
+        'deleted2': 'You deleted this message',
+        'events_encripted': 'Messages to this group are now secured with end-to-end encryption.',
+        'event_changed_phone': 'changed their phone number to a new number.',
+        'event_changed_phone2': 'changed to',
+        'event_admin': "You're now an admin",
+        'event_create': 'created group',
+        'event_subject': 'changed the subject from',
+        'event_icon': "changed this group's icon",
+        'event_add': 'added',
+        'event_add2': 'added',
+        'event_left': 'left'},
+    'in': {
+        'language': 'Indonesian',
+        'date': '%d/%m/%y %H.%M',
+        'media': 'Media tidak disertakan',
+        'location': 'Lokasi terkini dibagikan',
+        'location2': 'lokasi',
+        'contact': 'file terlampir',
+        'deleted': 'Pesan ini telah dihapus',
+        'deleted2': 'Anda telah menghapus pesan ini',
+        'events_encripted': 'Pesan yang dikirim ke grup ini kini diamankan dengan enkripsi end-to-end.',
+        'event_changed_phone': 'telah mengganti nomor teleponnya ke nomor baru.',
+        'event_changed_phone2': 'telah diganti ke',
+        'event_admin': 'Anda sekarang adalah admin',
+        'event_create': 'telah membuat grup',
+        'event_subject': 'telah mengubah subjek dari',
+        'event_icon': 'telah mengubah ikon grup ini',
+        'event_add': 'telah menambahkan',
+        'event_add2': 'menambahkan',
+        'event_left': 'keluar'}}
+
+PATTERN = {
+    'emoji': '<(?:Emoji)(?:[^>]+)>',
+    'link': RE_LINK,
+    'mention': '@\d+',
+    'media': '<(?:{media})>',
+    'location': '(?:{location}|(?:{location2}:\s' + RE_LINK + '))',
+    'contact': '^.+\.(vcf \({contact}\))',
+    'deleted': '({deleted}|{deleted2})',
+    'events': [
+        '.+\s({events_encripted})\s.+',
+        '(.+)\s({event_changed_phone})\s.+',
+        '(.+)\s({event_changed_phone2})\s(.+)',
+        "^({event_admin})",
+        '(.+)\s({event_create})\s"(.+)"',
+        '(.+)\s({event_subject})\s".+"\s\w+\s"(.+)"',
+        "(.+)\s({event_icon})",
+        '(.+?)\s({event_add}|{event_add2})\s(.+)',
+        '(.+)\s({event_left})']}
 
 TOOLTIPS = {
     'save': 'Currently not avaliable due limited capacity on heroku postgre free plan',
