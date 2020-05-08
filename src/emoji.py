@@ -1,5 +1,7 @@
 CLEANER = ['\ufe0f', '\u2068', '\u2069']
 
+
+# scrape from https://emojipedia.org/whatsapp/2.19.352/
 EMOJI = {
     u'\U0001F600': 0,  # Grinning Face
     u'\U0001F603': 1,  # Grinning Face with Big Eyes

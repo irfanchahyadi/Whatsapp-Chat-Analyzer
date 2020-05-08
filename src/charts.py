@@ -76,18 +76,25 @@ def chart5(df, n):
             'yaxis': {'automargin': True}}}
 
 def chart6(df, n):
-    counter = Counter(df[df.count_emoji > 0]['list_emoji'].sum())
-    n_most = counter.most_common(n)
-    other = 0
-    for emoji, i in counter.most_common():
-        if (emoji, i) not in n_most:
-            other += i
-    if other:
-        n_most.append(('other', other))
+    list_emoji = df[df.count_emoji > 0]['list_emoji'].sum()
+    if isinstance(list_emoji, list):
+        counter = Counter(list_emoji)
+        n_most = counter.most_common(n)
+        other = 0
+        for emoji, i in counter.most_common():
+            if (emoji, i) not in n_most:
+                other += i
+        if other:
+            n_most.append(('other', other))
+        values = [n for emoji, n in n_most]
+        labels = [encode_emoji(emoji) for emoji, n in n_most]
+    else:
+        values = []
+        labels = []
     return {
         'data': [{
-            'values': [n for emoji, n in n_most],
-            'labels': [encode_emoji(emoji) for emoji, n in n_most],
+            'values': values,
+            'labels': labels,
             'type': 'pie',
             'hole': 0.4,
             'sort': False,

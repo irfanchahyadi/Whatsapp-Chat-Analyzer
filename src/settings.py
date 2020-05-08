@@ -9,6 +9,8 @@ DB_CREDENTIALS = {
     'db': os.getenv('DB_DATABASE')}
 
 APP_NAME = 'Whatsapp Chat Analyzer'
+SOURCE_CODE_URL = 'https://github.com/irfanchahyadi/Whatsapp-Chat-Analyzer'
+DISCLAIMER_URL = SOURCE_CODE_URL + '/blob/master/README.md#Disclaimer'
 LOGO = '/assets/logo.png'
 FONT_AWESOME = 'https://use.fontawesome.com/releases/v5.10.2/css/all.css'
 FROM_LANDING_PAGE = '?from=landing_page'
@@ -113,5 +115,6 @@ TOOLTIPS = {
     'recruiter': 'User who invite the most new member to group',
     'inconstant': 'User who frequently send and delete message',
     'dominance': 'Comparison top 5 most active user over time',
-    'breakdown-content': 'Top 5 most active user and amount each content they sent'
+    'breakdown-content': 'Top 5 most active user and amount each content they sent',
+    'emoji-used': 'Top 10 most used emoji on text message'
 }

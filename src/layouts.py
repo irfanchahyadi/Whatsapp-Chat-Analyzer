@@ -29,36 +29,38 @@ def add_help(inside, tooltip_id=None, hide=True):
     return result
 
 home = html.Div([
-    html.H1(settings.APP_NAME),
-    dcc.Link('DEMO', href='/groupchat/DEMO'),
-    html.I(className='fas fa-question-circle fa-lg'),
-    dbc.Card(
-        dbc.CardBody([
-            html.H5('Show your saved chat'),
-            html.Div(className='input-group',
-                children=[
-                    dcc.Input(id='url-input',
-                        placeholder='Enter your last url key',
-                        type='text',
-                        maxLength=10,
-                        autoFocus=True,
-                        debounce=True,
-                        className='form-control'),
-                    html.Button(id='url-submit', children='Submit', className='btn btn-primary')])])),
-    dbc.Card(
-        dbc.CardBody([
-            html.H5('Upload and Analyze your chat'),
-            dbc.Col([
-                dbc.Row([
+    html.Div(
+        html.H1(settings.APP_NAME), className='home-header'),
+    html.Div([
+        dcc.Link('DEMO', href='/groupchat/DEMO'),
+        dbc.Card(
+            dbc.CardBody([
+                html.H5('Show your saved chat'),
+                html.Div(className='input-group',
+                    children=[
+                        dcc.Input(id='url-input',
+                            placeholder='Enter your last url key',
+                            type='text',
+                            maxLength=10,
+                            autoFocus=True,
+                            debounce=True,
+                            className='form-control'),
+                        html.Button(id='url-submit', children='Submit', className='btn btn-wa')])])),
+        dbc.Card(
+            dbc.CardBody([
+                dbc.Col([
+                    html.H5('Upload and Analyze your chat'),
                     html.Div([
                         add_help(html.Div('Save '), 'save', hide=False),
-                        html.Div(':', style={'margin-right': '10px'}),
-                        daq.BooleanSwitch(id='save-switch', on=False, color='#29b6f6', disabled=True)], style={'display': 'flex', 'margin-left': 'auto', 'margin-right': '0px', 'align-items': 'center'})], style={'margin-bottom': '5px'}),
-                html.Div(
-                    dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file')),
-                html.Div(id='alert-container')
-            ])]))
-])
+                        html.Div(':', style={'margin-left': '5px', 'margin-right': '10px'}),
+                        daq.BooleanSwitch(id='save-switch', on=False, color='#29b6f6', disabled=True)], style={'display': 'flex', 'margin-left': 'auto', 'margin-right': '0px', 'align-items': 'center'})
+                ], style={'display': 'flex', 'margin-bottom': '5px'}),
+                dbc.Col([
+                    dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file'),
+                    html.Div(id='alert-container')
+                ])]))], className='home'),
+    html.Div(
+        [html.A('Disclaimer', href=settings.DISCLAIMER_URL), '  |  ', html.A('Source Code', href=settings.SOURCE_CODE_URL, target='_blank')], className='home-footer'),])
 
 
 groupchat = html.Div([
@@ -87,15 +89,12 @@ groupchat = html.Div([
     dbc.Card(
         dbc.Col([
             dbc.Row([
-                html.Div('Filter User :', style={'padding-left': '0px', 'margin-right': '10px'}),
-                dbc.Col(
-                    dcc.Dropdown(id='dropdown-users', options=[], multi=True, value=[]))], align='center'),
-            dbc.Row([
-                html.Div('Filter Date :', style={'padding-left': '0px', 'margin-right': '10px'}),
                 dcc.DatePickerRange(id='date-picker', display_format='DD/MM/YYYY', clearable=True),
-                html.Div(['Show help :', daq.BooleanSwitch(id='help-switch', on=False, color='#29b6f6', style={'margin-left': '10px'})], style={'margin-left': 'auto', 'margin-right': '0px', 'display': 'inherit'})
-                ], align='center', style={'margin-top': '5px'})
-            ]), className='card-filter'),
+                dbc.Col(
+                    dcc.Dropdown(id='dropdown-users', placeholder='Filter user', options=[], multi=True, value=[]), style={'margin-left': '20px', 'margin-right': '20px'}),
+				html.Div(['Show help :', daq.BooleanSwitch(id='help-switch', on=False, color='#29b6f6', style={'margin-left': '5px'})], style={'margin-left': 'auto', 'margin-right': '0px', 'display': 'inherit'})
+			], align='center')
+        ]), className='card-filter'),
 
     dbc.Card(
         dbc.CardBody([
@@ -145,9 +144,9 @@ groupchat = html.Div([
             dbc.Card([dbc.CardHeader(add_help(html.H6('Inconstant'), 'inconstant')), html.Div(id='most-deleted')], className='col-md')], justify='around', style={'margin-top': '-10px'}),
         dbc.Row([
             dbc.Card([dbc.CardHeader(add_help(html.H6('Favorite Domain'), 'favorite-domain')), html.Div(id='most-domain')], className='col-md'),
-            dbc.Card([dbc.CardHeader(add_help(html.H6(''), 'favorite-domain')), html.Div(id='most-')], className='col-md'),
-            dbc.Card([dbc.CardHeader(add_help(html.H6(''), 'favorite-domain')), html.Div(id='most-')], className='col-md'),
-            dbc.Card([dbc.CardHeader(add_help(html.H6(''), 'favorite-domain')), html.Div(id='most-')], className='col-md')], justify='around', style={'margin-top': '-10px'})]),
+            dbc.Card([dbc.CardHeader(html.H6('')), html.Div(id='most-')], className='col-md'),
+            dbc.Card([dbc.CardHeader(html.H6('')), html.Div(id='most-')], className='col-md'),
+            dbc.Card([dbc.CardHeader(html.H6('')), html.Div(id='most-')], className='col-md')], justify='around', style={'margin-top': '-10px'})]),
 
     dbc.Card(
         dbc.CardBody([
@@ -168,12 +167,12 @@ groupchat = html.Div([
                     dcc.Graph(id='chart-5', figure={})]), className='col-md-8'),
         dbc.Card(
             dbc.CardBody([
-                dbc.CardHeader(html.H5('Top 10 Emoji Used')),
+                dbc.CardHeader(add_help(html.H5('Top 10 Emoji Used'), 'emoji-used')),
                 dcc.Graph(id='chart-6', figure={})
                 ]), className='col-md')]),
 
     html.Div(id='counter')
-])
+], className='visualize')
 
 not_found = 'sory not found'
 
