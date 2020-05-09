@@ -109,3 +109,8 @@ def chart6(df, n):
             'height': CHART_HEIGHT,
             'showlegend': False,
             'margin': {'r': 0, 'l': 0, 't': 0, 'b': 20, 'pad': 0}}}
+
+def chart7(df):
+    list_invited = df[(df.category == 'Event') & (df.event_type == 'added')][['contact', 'event_target']].values
+    list_user = set([item for sublist in list_invited for item in sublist])
+    return [{'data': {'id': user, 'label': user}} for user in list_user] + [{'data': {'source': source, 'target': target}} for source, target in list_invited]

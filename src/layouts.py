@@ -2,6 +2,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
+import dash_cytoscape as cyto
 from src import settings
 
 base = html.Div([
@@ -29,8 +30,9 @@ def add_help(inside, tooltip_id=None, hide=True):
     return result
 
 home = html.Div([
-    html.Div(
-        html.H1(settings.APP_NAME), className='home-header'),
+    html.Div([
+        html.A(html.Img(src=settings.LOGO, height="60px"), href='/'),
+        html.H1(settings.APP_NAME)], className='home-header'),
     html.Div([
         dcc.Link('DEMO', href='/groupchat/DEMO'),
         dbc.Card(
@@ -58,9 +60,9 @@ home = html.Div([
                 dbc.Col([
                     dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file'),
                     html.Div(id='alert-container')
-                ])]))], className='home'),
+                ])]), style={'margin-top': '20px'})], className='home'),
     html.Div(
-        [html.A('Disclaimer', href=settings.DISCLAIMER_URL), '  |  ', html.A('Source Code', href=settings.SOURCE_CODE_URL, target='_blank')], className='home-footer'),])
+        [html.A('Disclaimer', href=settings.DISCLAIMER_URL), ' | ', html.A('Source Code', href=settings.SOURCE_CODE_URL, target='_blank')], className='home-footer'),])
 
 
 groupchat = html.Div([
@@ -106,17 +108,17 @@ groupchat = html.Div([
                     {'label': 'Weekly', 'value': 'week'},
                     {'label': 'Daily', 'value': 'date'}],
                 value='date', inputStyle={'margin-left': '7px', 'margin-right': '2px'}),
-            dcc.Graph(id='chart-1', figure={})])),
+            dcc.Graph(id='chart-1')])),
 
     dbc.Row([
         dbc.Card(
             dbc.CardBody([
                 dbc.CardHeader(add_help(html.H5('Daily Chat Activity'), 'daily-activity')),
-                    dcc.Graph(id='chart-2', figure={})]), className='col-md-4'),
+                    dcc.Graph(id='chart-2')]), className='col-md-4'),
         dbc.Card(
             dbc.CardBody([
                 dbc.CardHeader(add_help(html.H5('Chat Activity by Hour'), 'hourly-activity')),
-                dcc.Graph(id='chart-3', figure={})]), className='col-md')]),
+                dcc.Graph(id='chart-3')]), className='col-md')]),
 
     dbc.Card(dbc.CardHeader(html.H5('Averages'), className='single-header')),
         dbc.Row([
@@ -158,18 +160,35 @@ groupchat = html.Div([
                     {'label': 'Weekly', 'value': 'week'},
                     {'label': 'Daily', 'value': 'date'}],
                 value='date', inputStyle={'margin-left': '7px', 'margin-right': '2px'}),
-            dcc.Graph(id='chart-4', figure={})])),
+            dcc.Graph(id='chart-4')])),
 
     dbc.Row([
         dbc.Card(
             dbc.CardBody([
                 dbc.CardHeader(add_help(html.H5('Top 5 Breakdown by Content'), 'breakdown-content')),
-                    dcc.Graph(id='chart-5', figure={})]), className='col-md-8'),
+                    dcc.Graph(id='chart-5')]), className='col-md-8'),
         dbc.Card(
             dbc.CardBody([
                 dbc.CardHeader(add_help(html.H5('Top 10 Emoji Used'), 'emoji-used')),
-                dcc.Graph(id='chart-6', figure={})
+                dcc.Graph(id='chart-6')
                 ]), className='col-md')]),
+
+    dbc.Card(
+        dbc.CardBody([
+            dbc.CardHeader(add_help(html.H5('Recruitment Genealogy'), 'recruitment-genealogy')),
+            cyto.Cytoscape(
+                id='chart-7',
+                layout={'name': 'breadthfirst', 'directed': True, 'spacingFactor': 2.5},
+                style={'width': '100%', 'height': f'{settings.CHART_HEIGHT}px'},
+                minZoom=0.2, maxZoom=3,
+                stylesheet=[
+                    {'selector': 'node', 'style': {'label': 'data(id)'}},
+                    {'selector': 'edge', 'style': {
+                        'curve-style': 'bezier',
+                        'target-arrow-color': '#1ebea5',
+                        'target-arrow-shape': 'triangle',
+                        'line-color': '#1ebea5'}}],
+                elements=[])])),
 
     html.Div(id='counter')
 ], className='visualize')

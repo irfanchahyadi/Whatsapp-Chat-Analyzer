@@ -116,5 +116,6 @@ TOOLTIPS = {
     'inconstant': 'User who frequently send and delete message',
     'dominance': 'Comparison top 5 most active user over time',
     'breakdown-content': 'Top 5 most active user and amount each content they sent',
-    'emoji-used': 'Top 10 most used emoji on text message'
+    'emoji-used': 'Top 10 most used emoji on text message',
+    'recruitment-genealogy': 'Recruitment genealogy'
 }

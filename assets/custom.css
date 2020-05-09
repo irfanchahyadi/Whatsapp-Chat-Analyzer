@@ -31,10 +31,20 @@ a:hover {
 }
 
 .home-header {
+    display: flex;
     background-color: #1ebea5;
-    height: 100px;
+    height: 80px;
     color: #fff;
-    padding: 20px;
+}
+
+.home-header a {
+    line-height: 70px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.home-header h1 {
+    line-height: 80px;
 }
 
 .home-footer {
@@ -157,4 +167,8 @@ td {
 
 .td-value {
     text-align: right;
+}
+
+.modebar{
+    display: none !important;
 }
