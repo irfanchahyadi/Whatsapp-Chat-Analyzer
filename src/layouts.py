@@ -191,7 +191,7 @@ groupchat = html.Div([
                         'line-color': '#1ebea5'}}],
                 elements=[])])),
 
-    html.Div(id='counter')
+    html.Div(id='counter', style={'visibility': 'hidden'})
 ], className='visualize')
 
 not_found = 'sory not found'
