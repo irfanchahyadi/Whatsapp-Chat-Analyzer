@@ -3,6 +3,7 @@ from src.chat_parser import encode_emoji
 from src.settings import CHART_HEIGHT, DAYS, HOURS, CATEGORIES, CONTENT
 
 def chart1(df, interval):
+    """Generate time series figure chart."""
     pivoted = df[[interval, 'category']].pivot_table(index=interval, columns='category', aggfunc=len, fill_value=0).reset_index()
     return {
         'data': [{'x': pivoted[interval], 'y': pivoted[category], 'type': 'bar', 'name': category} for category in sorted(pivoted.columns)[::-1] if category != interval],
@@ -14,6 +15,7 @@ def chart1(df, interval):
             'margin': {'l': 30, 'r': 30, 't': 10, 'b': 30}}}
 
 def chart2(df):
+    """Generate daily chat activity figure chart."""
     pivoted = df.groupby('day').size()
     return {
         'data':[{
@@ -29,6 +31,7 @@ def chart2(df):
                 'angularaxis': {'rotation': 90, 'direction': 'clockwise', 'automargin': True}}}}
 
 def chart3(df):
+    """Generate chat activity by hour figure chart."""
     pivoted1 = df.groupby('hour').size()
     pivoted2 = df[['day', 'hour']].pivot_table(index='day', columns='hour', aggfunc=len, fill_value=0)
     return {
@@ -52,6 +55,7 @@ def chart3(df):
             'yaxis2': {'nticks': 7, 'side': 'right', 'domain': [0, 0.6], 'automargin': True}}}
 
 def chart4(df, interval, n):
+    """Generate Top n user dominance figure chart."""
     pivoted = df[[interval, 'contact']].pivot_table(index=interval, columns='contact', aggfunc=len, fill_value=0).reset_index()
     users = pivoted.sum(numeric_only=True).sort_values(ascending=False).head(n)
     return {
@@ -63,6 +67,7 @@ def chart4(df, interval, n):
             'margin': {'l': 30, 'r': 30, 't': 10, 'b': 30}}}
 
 def chart5(df, n):
+    """Generate Top n breakdown by content figure chart."""
     pivoted = df[['contact', 'category']].pivot_table(index='contact', columns='category', aggfunc=len, fill_value=0).reindex(columns=CATEGORIES, fill_value=0)
     users = pivoted.sum(axis=1).sort_values(ascending=False).head(n).sort_values()
     return {
@@ -76,6 +81,7 @@ def chart5(df, n):
             'yaxis': {'automargin': True}}}
 
 def chart6(df, n):
+    """Generate Top n emoji used figure chart."""
     list_emoji = df[df.count_emoji > 0]['list_emoji'].sum()
     if isinstance(list_emoji, list):
         counter = Counter(list_emoji)
@@ -111,6 +117,7 @@ def chart6(df, n):
             'margin': {'r': 0, 'l': 0, 't': 0, 'b': 20, 'pad': 0}}}
 
 def chart7(df):
+    """Generate Recruitment genealogy elements chart."""
     list_invited = df[(df.category == 'Event') & (df.event_type == 'added')][['contact', 'event_target']].values
     list_user = set([item for sublist in list_invited for item in sublist])
     return [{'data': {'id': user, 'label': user}} for user in list_user] + [{'data': {'source': source, 'target': target}} for source, target in list_invited]

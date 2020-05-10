@@ -48,7 +48,7 @@ LANGUAGE = {
         'date': '%d/%m/%y %H.%M',
         'media': 'Media tidak disertakan',
         'location': 'Lokasi terkini dibagikan',
-        'location2': 'lokasi',
+        'location2': 'lokasi ',
         'contact': 'file terlampir',
         'deleted': 'Pesan ini telah dihapus',
         'deleted2': 'Anda telah menghapus pesan ini',
@@ -66,7 +66,7 @@ LANGUAGE = {
 PATTERN = {
     'emoji': '<(?:Emoji)(?:[^>]+)>',
     'link': RE_LINK,
-    'mention': '@\d+',
+    'mention': '@\d{10,}',
     'media': '<(?:{media})>',
     'location': '(?:{location}|(?:{location2}:\s' + RE_LINK + '))',
     'contact': '^.+\.(vcf \({contact}\))',

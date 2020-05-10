@@ -15,6 +15,7 @@ base = html.Div([
 
 
 def add_help(inside, tooltip_id=None, hide=True):
+    """Wrapper html tag to display help tooltips."""
     style = {'display': 'inline-block', 'margin-right': '5px'}
     visibility = 'hidden' if hide else 'visible'
     try:
@@ -204,6 +205,7 @@ page_404 = html.Div([
 
 
 def award_list(series, n=3):
+    """Generate html table tag for award list."""
     trophy_emoji = '\U0001F3C6'
     list_row = []
     try:

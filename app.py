@@ -18,6 +18,7 @@ app.layout = layouts.base
 
 @app.callback([Output('page-content', 'children'), Output('container-data-store', 'children')], [Input('url', 'pathname')])
 def display_page(pathname):
+    """Handle what layout should be display."""
     container_data_store = dash.no_update
     if pathname == '/':
         page_content = layouts.home
@@ -40,6 +41,7 @@ def display_page(pathname):
     [Input('upload-data', 'contents'), Input('url-submit', 'n_clicks')],
     [State('save-switch', 'on'), State('url-input', 'value')])
 def upload_data(contents, n_click, save, url_input):
+    """Change url and load data into datastore when upload chat or go to saved chat url key."""
     ctx = dash.callback_context
     url, datasets, alert = dash.no_update, dash.no_update, dash.no_update
     if ctx.triggered[0]['prop_id'] == 'upload-data.contents':
@@ -65,6 +67,7 @@ def upload_data(contents, n_click, save, url_input):
     [Output('dropdown-users', 'options'), Output('navbar-brand', 'children'), Output('created-by', 'children'), Output('count-user', 'children')],
     [Input('dropdown-users', 'value')], [State('data-store', 'data')])
 def fill_dropdown_users(dropdown_users, datasets):
+    """Initialize dropdown-users options and other groupchat scope data."""
     datasets = json.loads(datasets)
     df = pd.read_json(datasets['data'], orient='split')
     output = [
@@ -77,6 +80,7 @@ def fill_dropdown_users(dropdown_users, datasets):
 
 @app.callback([Output('date-picker', 'min_date_allowed'), Output('date-picker', 'max_date_allowed')], [Input('date-picker', 'id')], [State('data-store', 'data')])
 def update_date_picker(id_date_picker, datasets):
+    """Initialize date-picker min and max allowed date."""
     datasets = json.loads(datasets)
     return datasets['chat_min_date'], datasets['chat_max_date']
 
@@ -86,6 +90,7 @@ def update_date_picker(id_date_picker, datasets):
     [Output('tt-' + key, 'hide_arrow') for key in settings.TOOLTIPS],
     [Input('help-switch', 'on')])
 def update_help_switch(show):
+    """show/hide help tooltips."""
     visibility = 'visible' if show else 'hidden'
     output = [{'visibility': visibility}] * len(settings.TOOLTIPS) * 2 + [not show] * len(settings.TOOLTIPS)
     return output
@@ -104,6 +109,7 @@ def update_help_switch(show):
     [Input('dropdown-users', 'value'), Input('date-picker', 'start_date'), Input('date-picker', 'end_date'), Input('time-interval1', 'value'), Input('time-interval2', 'value')],
     [State('data-store', 'data')])
 def update_filter(dropdown_users, start_date_str, end_date_str, interval1, interval2, datasets):
+    """Update displayed data and chart at first and when filter apply."""
     datasets = json.loads(datasets)
     df = pd.read_json(datasets['data'], orient='split')
     start_date = date.min if start_date_str is None else datetime.strptime(start_date_str, '%Y-%m-%d').date()

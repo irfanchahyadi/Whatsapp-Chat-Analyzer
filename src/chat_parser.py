@@ -16,7 +16,7 @@ def get_pattern(key, lang='en'):
     re_patterns = PATTERN[key]
     if isinstance(re_patterns, list):
         re_patterns = [re_pattern.format(**LANGUAGE[lang]) for re_pattern in re_patterns]
-    else:
+    elif key != 'mention':
         re_patterns = re_patterns.format(**LANGUAGE[lang])
     return re_patterns
 
@@ -181,7 +181,6 @@ def load_parsed_data(input_string, input_type, save=True):
         df, lang = parse(input_string)
         url = db.generate_url(10, unique=save)
         if save and not df.empty:
-            db.reset_chat() # TODO: delete this for production
             url = db.add_chat(df, lang, url)
     elif input_type == 'url':
         url = input_string
