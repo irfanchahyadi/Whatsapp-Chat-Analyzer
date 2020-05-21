@@ -2,7 +2,7 @@ import random, string
 from datetime import datetime
 from sqlalchemy import create_engine
 import pandas as pd
-from src.settings import DB_CREDENTIALS as cred
+from src.settings import DATABASE_URL
 
 def generate_url(n, unique=True):
     """Generate url key."""
@@ -19,7 +19,7 @@ def generate_url(n, unique=True):
 
 def get_engine():
     """Create sqlalchemy engine."""
-    engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(cred['user'], cred['pass'], cred['host'], cred['port'], cred['db']))
+    engine = create_engine(DATABASE_URL)
     return engine
 
 def get_df(sql):

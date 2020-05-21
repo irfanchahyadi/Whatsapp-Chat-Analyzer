@@ -1,13 +1,7 @@
 import os, dotenv
 
 dotenv.load_dotenv()
-DB_CREDENTIALS = {
-    'user': os.getenv('DB_USERNAME'),
-    'pass': os.getenv('DB_PASSWORD'),
-    'host': os.getenv('DB_HOST'),
-    'port': os.getenv('DB_PORT'),
-    'db': os.getenv('DB_DATABASE')}
-
+DATABASE_URL = os.getenv('DATABASE_URL')
 APP_NAME = 'Whatsapp Chat Analyzer'
 SOURCE_CODE_URL = 'https://github.com/irfanchahyadi/Whatsapp-Chat-Analyzer'
 DISCLAIMER_URL = SOURCE_CODE_URL + '/blob/master/README.md#Disclaimer'
