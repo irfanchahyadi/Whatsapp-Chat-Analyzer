@@ -74,7 +74,17 @@ home = html.Div([
                 dbc.Col([
                     dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file'),
                     html.Div(id='alert-container')
-                ])]), style={'margin-top': '20px'})], className='home'),
+                ]),
+                dbc.Col([
+                    html.H5('How to export chat history'),
+                    html.Table([
+                        html.Tr([html.Td('1. '), html.Td(['Select personal or group chat on WhatsApp'])]),
+                        html.Tr([html.Td('2. '), html.Td(['Click ', html.I(className='fas fa-ellipsis-v'), ' button > ', html.Strong('More')])]),
+                        html.Tr([html.Td('3. '), html.Td(['Select ', html.Strong('Export chat'), ' > ', html.Strong('Without media')])]),
+                        html.Tr([html.Td('4. '), html.Td(['Choose send chat via ', html.Strong('Gmail'), ' or ', html.Strong('Google Drive')])]),
+                        html.Tr([html.Td('5. '), html.Td(['Download chat file (something like ', html.Strong("Chat WhatsApp with <chatname>.txt"), '), then upload it here'])])]),
+                ], style={'margin-top': '20px'})
+            ]), style={'margin-top': '20px'})], className='home'),
     html.Div(footer, style={'position': 'absolute', 'bottom': 0, 'width': '100%'})
 ])
 
