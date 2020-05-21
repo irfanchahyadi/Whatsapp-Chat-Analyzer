@@ -117,5 +117,6 @@ TOOLTIPS = {
     'dominance': 'Comparison top 5 most active user over time',
     'breakdown-content': 'Top 5 most active user and amount each content they sent',
     'emoji-used': 'Top 10 most used emoji on text message',
-    'recruitment-genealogy': 'Recruitment genealogy, A invite B to group, then B invite C and D, and so on.'
+    'word-cloud': 'Show most used word, reflect contexts of this chat',
+    'recruitment-genealogy': 'Recruitment genealogy, A invite B to group, then B invite C and D, and so on'
 }

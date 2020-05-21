@@ -84,6 +84,11 @@ def find_link(x):
                 list_link.append(temp)
     return list_link
 
+def find_word(text):
+    """Find words from message."""
+    words = re.findall('\w+', text)
+    return [word.lower() for word in words]
+
 def get_category(x, lang):
     """Define category (Event, Media, Location, Contact, Deleted, and Text) for each message."""
     contact, message = x
@@ -132,7 +137,7 @@ def enrich(df, lang):
     df['list_emoji'] = df.message.apply(lambda x: re.findall(get_pattern('emoji'), x))
     df['list_link'] = df[['category', 'message']].apply(find_link, axis=1)
     df['list_mention'] = df.message.apply(lambda x: re.findall(get_pattern('mention'), x))
-    df['list_words'] = df.clean_message.apply(lambda x: re.findall('\w+', x))
+    df['list_words'] = df.clean_message.apply(find_word)
     df['count_emoji'] = df.list_emoji.apply(len)
     df['count_link'] = df.list_link.apply(len)
     df['count_mention'] = df.list_mention.apply(len)

@@ -18,6 +18,11 @@ a:hover {
     color: #1cb39b;
 }
 
+.btn-wa:hover {
+    background-color: #d4f1ed;
+    color: #1cb39b;
+}
+
 .visualize {
     margin-top: 60px;
     margin-left: 5%;

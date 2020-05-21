@@ -1,6 +1,10 @@
 from collections import Counter
+import base64
+from io import BytesIO
+from wordcloud import WordCloud
 from src.chat_parser import encode_emoji
 from src.settings import CHART_HEIGHT, DAYS, HOURS, CATEGORIES, CONTENT
+from src.stopwords import get_stopwords
 
 def chart1(df, interval):
     """Generate time series figure chart."""
@@ -117,6 +121,19 @@ def chart6(df, n):
             'margin': {'r': 0, 'l': 0, 't': 0, 'b': 20, 'pad': 0}}}
 
 def chart7(df):
+    """Generate WordCloud."""
+    list_words = df.list_words.sum()
+    stopwords = get_stopwords(list_words)
+    counter = dict(Counter(list_words))
+    counter = {key: counter[key] for key in counter if key not in stopwords and key.isalpha()}
+    wc = WordCloud(stopwords=stopwords, prefer_horizontal=1, colormap='tab10', background_color='white', min_font_size=12, width=1000, height=250, scale=2)
+    wc_img = wc.generate_from_frequencies(frequencies=counter).to_image()
+    with BytesIO() as buffer:
+        wc_img.save(buffer, 'png')
+        img = "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
+    return img
+
+def chart8(df):
     """Generate Recruitment genealogy elements chart."""
     list_invited = df[(df.category == 'Event') & (df.event_type == 'added')][['contact', 'event_target']].values
     list_user = set([item for sublist in list_invited for item in sublist])
