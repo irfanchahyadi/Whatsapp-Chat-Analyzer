@@ -14,5 +14,4 @@ Built with python and plotly-dash as my side project at covid 19 quarantine. Ope
 [MIT License](LICENSE)
 
 ## Disclaimer
-This project is not affiliated, associated or connected with the WhatsApp Inc.
-Any product names, logos, brands, and other trademarks are the property of their respective trademark holders.
+[Disclaimer](DISCLAIMER.md)

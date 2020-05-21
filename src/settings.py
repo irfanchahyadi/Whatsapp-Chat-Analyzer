@@ -3,10 +3,14 @@ import os, dotenv
 dotenv.load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 APP_NAME = 'Whatsapp Chat Analyzer'
-SOURCE_CODE_URL = 'https://github.com/irfanchahyadi/Whatsapp-Chat-Analyzer'
-DISCLAIMER_URL = SOURCE_CODE_URL + '/blob/master/README.md#Disclaimer'
 LOGO = '/assets/logo.png'
 FONT_AWESOME = 'https://use.fontawesome.com/releases/v5.10.2/css/all.css'
+COPYRIGHT = 'Copyright \U000000A9 2020 Irfan Chahyadi'
+SOURCE_CODE_URL = 'https://github.com/irfanchahyadi/Whatsapp-Chat-Analyzer'
+DISCLAIMER_URL = SOURCE_CODE_URL + '/blob/master/DISCLAIMER.md'
+CONTACT_EMAIL = 'mailto:irfanchahyadi@gmail.com'
+CONTACT_GITHUB = 'https://github.com/irfanchahyadi'
+CONTACT_LINKEDIN = 'https://www.linkedin.com/in/irfanchahyadi'
 FROM_LANDING_PAGE = '?from=landing_page'
 CHART_HEIGHT = 270
 DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']

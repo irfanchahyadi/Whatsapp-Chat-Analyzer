@@ -30,6 +30,19 @@ def add_help(inside, tooltip_id=None, hide=True):
     ])
     return result
 
+footer = html.Div([
+    dbc.Col(settings.COPYRIGHT, style={'text-align': 'left'}),
+    dbc.Col([
+        html.A('Disclaimer', href=settings.DISCLAIMER_URL, target='_blank'),
+        ' | ',
+        html.A('Source Code', href=settings.SOURCE_CODE_URL, target='_blank')], style={'text-align': 'center'}),
+    dbc.Col([
+        html.A(html.I(className='fas fa-at'), href=settings.CONTACT_EMAIL, target='_blank'),
+        html.A(html.I(className='fab fa-github'), href=settings.CONTACT_GITHUB, target='_blank'),
+        html.A(html.I(className='fab fa-linkedin-in'), href=settings.CONTACT_LINKEDIN, target='_blank')
+    ], style={'text-align': 'right'})
+], className='home-footer')
+
 home = html.Div([
     html.Div([
         html.A(html.Img(src=settings.LOGO, height="60px"), href='/'),
@@ -62,8 +75,8 @@ home = html.Div([
                     dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file'),
                     html.Div(id='alert-container')
                 ])]), style={'margin-top': '20px'})], className='home'),
-    html.Div(
-        [html.A('Disclaimer', href=settings.DISCLAIMER_URL), ' | ', html.A('Source Code', href=settings.SOURCE_CODE_URL, target='_blank')], className='home-footer'),])
+    html.Div(footer, style={'position': 'absolute', 'bottom': 0, 'width': '100%'})
+])
 
 
 groupchat = html.Div([
@@ -199,8 +212,7 @@ groupchat = html.Div([
 
         html.Div(id='counter', style={'visibility': 'hidden'})], className='visualize'),
 
-    html.Div(
-            [html.A('Disclaimer', href=settings.DISCLAIMER_URL), ' | ', html.A('Source Code', href=settings.SOURCE_CODE_URL, target='_blank')], className='home-footer', style={'position': 'relative'})
+    html.Div(footer)
 ])
 
 not_found = 'sory not found'
