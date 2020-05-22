@@ -208,7 +208,7 @@ groupchat = html.Div([
                 dbc.CardHeader(add_help(html.H5('Recruitment Genealogy'), 'recruitment-genealogy')),
                 cyto.Cytoscape(
                     id='chart-8',
-                    layout={'name': 'breadthfirst', 'directed': True, 'spacingFactor': 2.5},
+                    layout={'name': 'breadthfirst', 'directed': True, 'spacingFactor': 1.5},
                     style={'width': '100%', 'height': f'{settings.CHART_HEIGHT}px'},
                     minZoom=0.2, maxZoom=3,
                     stylesheet=[

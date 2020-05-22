@@ -51,7 +51,11 @@ def upload_data(contents, n_click, save, url_input):
             url, datasets = chat_parser.load_parsed_data(content_decoded, 'upload', save)
             if url == 'not_supported':
                 supported_language = ', '.join([lang['language'] for lang in settings.LANGUAGE.values()])
-                alert = dbc.Alert('Language not supported. Currently supported languages: {}.'.format(supported_language), dismissable=True, color='danger')
+                alert = dbc.Alert([
+                    'Language not supported. Currently supported languages: {}.'.format(supported_language),
+                    html.Br(),
+                    'Wanna contribute? add your language at ', html.A('this file', href=settings.SETTINGS_URL, target='_blank'), '  then send me PR'
+                ], dismissable=True, color='danger')
                 url = dash.no_update
             else:
                 url = url + settings.FROM_LANDING_PAGE
@@ -112,6 +116,7 @@ def update_filter(dropdown_users, start_date_str, end_date_str, interval1, inter
     """Update displayed data and chart at first and when filter apply."""
     datasets = json.loads(datasets)
     df = pd.read_json(datasets['data'], orient='split')
+    lang = datasets['lang']
     start_date = date.min if start_date_str is None else datetime.strptime(start_date_str, '%Y-%m-%d').date()
     end_date = date.max if end_date_str is None else datetime.strptime(end_date_str, '%Y-%m-%d').date()
     filtered_df = df[
@@ -162,7 +167,7 @@ def update_filter(dropdown_users, start_date_str, end_date_str, interval1, inter
             charts.chart5(filtered_df, 5),
             charts.chart6(filtered_df, 10),
             charts.chart7(filtered_df),
-            charts.chart8(filtered_df)
+            charts.chart8(filtered_df, lang)
         ]
     return output
 

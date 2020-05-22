@@ -8,6 +8,7 @@ FONT_AWESOME = 'https://use.fontawesome.com/releases/v5.10.2/css/all.css'
 COPYRIGHT = 'Copyright \U000000A9 2020 Irfan Chahyadi'
 SOURCE_CODE_URL = 'https://github.com/irfanchahyadi/Whatsapp-Chat-Analyzer'
 DISCLAIMER_URL = SOURCE_CODE_URL + '/blob/master/DISCLAIMER.md'
+SETTINGS_URL = SOURCE_CODE_URL + '/blob/master/src/settings.py'
 CONTACT_EMAIL = 'mailto:irfanchahyadi@gmail.com'
 CONTACT_GITHUB = 'https://github.com/irfanchahyadi'
 CONTACT_LINKEDIN = 'https://www.linkedin.com/in/irfanchahyadi'
@@ -26,6 +27,8 @@ LANGUAGE = {
         'language': 'English',
         'date': '%m/%d/%y, %H:%M',
         'media': 'Media omitted',
+        'you': 'You',
+        'and': 'and',
         'location': 'live location shared',
         'location2': 'location',
         'contact': 'file attached',
@@ -45,6 +48,8 @@ LANGUAGE = {
         'language': 'Indonesian',
         'date': '%d/%m/%y %H.%M',
         'media': 'Media tidak disertakan',
+        'you': 'Anda',
+        'and': 'dan',
         'location': 'Lokasi terkini dibagikan',
         'location2': 'lokasi ',
         'contact': 'file terlampir',

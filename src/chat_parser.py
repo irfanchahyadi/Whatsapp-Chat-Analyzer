@@ -113,6 +113,8 @@ def extract_event(text, lang):
             matchs = match.groups()
             if len(matchs) == 3:
                 contact, event_type, target = matchs
+                if target == LANGUAGE[lang]['you'].lower():
+                    target = LANGUAGE[lang]['you']
             elif len(matchs) == 2:
                 contact, event_type, target = matchs[0], matchs[1], np.nan
             else:
@@ -198,11 +200,12 @@ def load_parsed_data(input_string, input_type, save=True):
     # TODO: support for both private & group chat
     group_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
     chat_name = df[(df.category == 'Event') & (df.event_type.isin(['created group', 'changed the subject from']))].tail(1)['event_target']
-    users = sorted(filter(lambda x: pd.notna(x) and x != 'You', df.contact.unique().tolist()))
+    users = sorted(filter(lambda x: pd.notna(x), df.contact.unique().tolist()))
     df = df.drop(group_created.index)
     df = df.drop(['message', 'clean_message'], axis=1)
     datasets = {
         'data': df.to_json(date_format='iso', orient='split'),
+        'lang': lang,
         'users': users,
         'chat_name': encode_emoji(chat_name.values[0]),
         'chat_created_by': group_created['contact'].values[0],
