@@ -107,6 +107,12 @@ a:hover {
     margin-bottom: 20px;
 }
 
+.small-note p {
+    margin-bottom: 0px;
+    font-size: 12px;
+    line-height: 14px;
+}
+
 .Select-placeholder {
     padding-left: 17px;
 }
@@ -164,7 +170,7 @@ a:hover {
     border-style: dashed;
     border-radius: 10px;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 tr {

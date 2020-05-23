@@ -31,7 +31,7 @@ def add_help(inside, tooltip_id=None, hide=True):
     return result
 
 footer = html.Div([
-    dbc.Col(settings.COPYRIGHT, style={'text-align': 'left'}),
+    dbc.Col(html.A(settings.COPYRIGHT, href=settings.COPYRIGHT_URL, target='_blank', style={'color': '#fff', 'font-weight': '400'}), style={'text-align': 'left'}),
     dbc.Col([
         html.A('Disclaimer', href=settings.DISCLAIMER_URL, target='_blank'),
         ' | ',
@@ -61,7 +61,8 @@ home = html.Div([
                             autoFocus=True,
                             debounce=True,
                             className='form-control'),
-                        html.Button(id='url-submit', children='Submit', className='btn btn-wa')])])),
+                        html.Button(id='url-submit', children='Submit', className='btn btn-wa')])]),
+            style={'display': 'none'}), # hidden, no need to show when save chat is disable
         dbc.Card(
             dbc.CardBody([
                 dbc.Col([
@@ -75,6 +76,14 @@ home = html.Div([
                     dcc.Upload(id='upload-data', children=html.Div(['Drag and Drop or ', html.A('Select Files')]), multiple=False, className='upload-file'),
                     html.Div(id='alert-container')
                 ]),
+                dbc.Col([
+                    html.Table(
+                        html.Tr([
+                            html.Td(html.P('Notes:')),
+                            html.Td([
+                                html.P("We won't save your data unless you specify to Save (which is not currently available)"),
+                                html.P('Due to heroku free plan performance, upload time may take a few minutes depend on file size. For comparison, 100kb file uploaded around 20 second and 1mb around 2 minutes. YMMV')])]))
+                ], className='small-note'),
                 dbc.Col([
                     html.H5('How to export chat history'),
                     html.Table([
