@@ -82,12 +82,12 @@ home = html.Div([
                             html.Td(html.P('Notes:')),
                             html.Td([
                                 html.P("We won't save your data unless you specify to Save (which is not currently available)"),
-                                html.P('Due to heroku free plan performance, upload time may take a few minutes depend on file size. For comparison, 100kb file uploaded around 20 second and 1mb around 2 minutes. YMMV')])]))
+                                html.P('Due to heroku free plan performance, upload time may take a few minutes depend on file size. For comparison, 100kb file uploaded around 20 second and 1mb around 2 minutes.')])]))
                 ], className='small-note'),
                 dbc.Col([
                     html.H5('How to export chat history'),
                     html.Table([
-                        html.Tr([html.Td('1. '), html.Td(['Select personal or group chat on WhatsApp'])]),
+                        html.Tr([html.Td('1. '), html.Td(['Select group chat on WhatsApp'])]),
                         html.Tr([html.Td('2. '), html.Td(['Click ', html.I(className='fas fa-ellipsis-v'), ' button > ', html.Strong('More')])]),
                         html.Tr([html.Td('3. '), html.Td(['Select ', html.Strong('Export chat'), ' > ', html.Strong('Without media')])]),
                         html.Tr([html.Td('4. '), html.Td(['Choose send chat via ', html.Strong('Gmail'), ' or ', html.Strong('Google Drive')])]),

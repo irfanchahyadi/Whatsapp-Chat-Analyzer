@@ -15,31 +15,31 @@ app.config.suppress_callback_exceptions = True
 
 app.title = settings.APP_NAME
 app.index_string = """
-	<!DOCTYPE html>
-	<html>
-		<head>
-			{%metas%}
-			<title>{%title%}</title>
-			{%favicon%}
-			{%css%}
-			<!-- Global site tag (gtag.js) - Google Analytics -->
-			<script async src="https://www.googletagmanager.com/gtag/js?id=""" + settings.GA_TRACKING_ID + """"></script>
-			<script>
-				window.dataLayer = window.dataLayer || [];
-				function gtag(){dataLayer.push(arguments);}
-				gtag('js', new Date());
-				gtag('config', '""" + settings.GA_TRACKING_ID + """');
-			</script>
-		</head>
-		<body>
-			{%app_entry%}
-			<footer>
-				{%config%}
-				{%scripts%}
-				{%renderer%}
-			</footer>
-		</body>
-	</html>"""
+    <!DOCTYPE html>
+    <html>
+        <head>
+            {%metas%}
+            <title>{%title%}</title>
+            {%favicon%}
+            {%css%}
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=""" + settings.GA_TRACKING_ID + """"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '""" + settings.GA_TRACKING_ID + """');
+            </script>
+        </head>
+        <body>
+            {%app_entry%}
+            <footer>
+                {%config%}
+                {%scripts%}
+                {%renderer%}
+            </footer>
+        </body>
+    </html>"""
 app.layout = layouts.base
 
 @app.callback([Output('page-content', 'children'), Output('container-data-store', 'children')], [Input('url', 'pathname')])
