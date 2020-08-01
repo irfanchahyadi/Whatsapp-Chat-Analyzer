@@ -1773,11 +1773,11 @@ EMOJI = {
     u'\U0001F464': 1767,  # Bust in Silhouette
     u'\U0001F465': 1768,  # Busts in Silhouette
     u'\U0001F463': 1769,  # Footprints
-    u'\U0001F3FB': 1770,  # Light Skin Tone
-    u'\U0001F3FC': 1771,  # Medium-Light Skin Tone
-    u'\U0001F3FD': 1772,  # Medium Skin Tone
-    u'\U0001F3FE': 1773,  # Medium-Dark Skin Tone
-    u'\U0001F3FF': 1774,  # Dark Skin Tone
+    # u'\U0001F3FB': 1770,  # Light Skin Tone
+    # u'\U0001F3FC': 1771,  # Medium-Light Skin Tone
+    # u'\U0001F3FD': 1772,  # Medium Skin Tone
+    # u'\U0001F3FE': 1773,  # Medium-Dark Skin Tone
+    # u'\U0001F3FF': 1774,  # Dark Skin Tone
     u'\U0001F435': 1775,  # Monkey Face
     u'\U0001F412': 1776,  # Monkey
     u'\U0001F98D': 1777,  # Gorilla
