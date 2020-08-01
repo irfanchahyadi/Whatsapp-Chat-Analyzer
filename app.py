@@ -96,7 +96,22 @@ def upload_data(contents, n_click, save, url_input):
 @app.callback(
     [Output('dropdown-users', 'options'), Output('navbar-brand', 'children'), Output('created-by', 'children'), Output('count-user', 'children')],
     [Input('dropdown-users', 'value')], [State('data-store', 'data')])
-def fill_dropdown_users(dropdown_users, datasets):
+def fill_dropdown_users_groupchat(dropdown_users, datasets):
+    """Initialize dropdown-users options and other groupchat scope data."""
+    datasets = json.loads(datasets)
+    df = pd.read_json(datasets['data'], orient='split')
+    output = [
+        [{'label': i, 'value': i} for i in datasets['users']],
+        datasets['chat_name'],
+        '{} at {}'.format(datasets['chat_created_by'], datasets['chat_created_at']),
+        '{:,} active, {:,} left group'.format(len(datasets['users']), df[(df.category == 'Event') & (df.event_type == 'left')].shape[0])
+    ]
+    return output
+
+@app.callback(
+    [Output('dropdown-users2', 'options'), Output('navbar-brand2', 'children'), Output('created-by2', 'children'), Output('count-user2', 'children')],
+    [Input('dropdown-users2', 'value')], [State('data-store', 'data')])
+def fill_dropdown_users_personalchat(dropdown_users, datasets):
     """Initialize dropdown-users options and other groupchat scope data."""
     datasets = json.loads(datasets)
     df = pd.read_json(datasets['data'], orient='split')
@@ -269,4 +284,4 @@ def update_personalchat(dropdown_users, start_date_str, end_date_str, interval1,
     return output
 
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=True)

@@ -205,7 +205,7 @@ def load_parsed_data(input_string, input_type, save=True):
         chat_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
         df = df.drop(chat_created.index[0])
     elif chat_type == 'personalchat':
-        chat_name = ' and '.join(users)
+        chat_name = ' & '.join(users)
         chat_created = df[df.category != 'Event'].sort_values('datetime').head(1)
     df = df.drop(['message', 'clean_message'], axis=1)
     datasets = {

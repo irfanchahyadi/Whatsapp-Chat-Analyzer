@@ -241,7 +241,7 @@ personalchat = html.Div([
                 dbc.Row([
                     html.A(
                         dbc.Col(html.Img(src=settings.LOGO, height="45px")), href='/'),
-                    dbc.Col(dbc.NavbarBrand(id='navbar-brand', className='ml-2'), style={'margin-left': '10px'})],
+                    dbc.Col(dbc.NavbarBrand(id='navbar-brand2', className='ml-2'), style={'margin-left': '10px'})],
                     align='center', no_gutters=True)], fixed='top', className='wa-navbar')]),
 
         dbc.Col([
