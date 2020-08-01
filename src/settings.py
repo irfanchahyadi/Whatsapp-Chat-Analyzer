@@ -37,6 +37,7 @@ LANGUAGE = {
         'deleted': 'This message was deleted',
         'deleted2': 'You deleted this message',
         'events_encripted': 'Messages to this group are now secured with end-to-end encryption.',
+        'events_encripted2': 'Messages to this chat and calls are now secured with end-to-end encryption.',
         'event_changed_phone': 'changed their phone number to a new number.',
         'event_changed_phone2': 'changed to',
         'event_admin': "You're now an admin",
@@ -58,6 +59,7 @@ LANGUAGE = {
         'deleted': 'Pesan ini telah dihapus',
         'deleted2': 'Anda telah menghapus pesan ini',
         'events_encripted': 'Pesan yang dikirim ke grup ini kini diamankan dengan enkripsi end-to-end.',
+		'events_encripted2': 'Pesan yang dikirim ke grup ini kini diamankan dengan enkripsi end-to-end.',
         'event_changed_phone': 'telah mengganti nomor teleponnya ke nomor baru.',
         'event_changed_phone2': 'telah diganti ke',
         'event_admin': 'Anda sekarang adalah admin',
@@ -78,6 +80,7 @@ PATTERN = {
     'deleted': '({deleted}|{deleted2})',
     'events': [
         '.+\s({events_encripted})\s.+',
+		'.+\s({events_encripted2})\s.+',
         '(.+)\s({event_changed_phone})\s.+',
         '(.+)\s({event_changed_phone2})\s(.+)',
         "^({event_admin})",

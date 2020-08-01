@@ -56,9 +56,11 @@ def convert_to_re_pattern(pattern):
 def detect_language(chat):
     """Detect android system language when exporting chat history, affect date format, event type, and non text object declaration."""
     for lang in LANGUAGE:
-        if re.match(get_pattern('events', lang)[0], chat):
-            return lang
-    return 'not_supported'
+        if re.search(get_pattern('events', lang)[0], chat):
+            return lang, 'groupchat'
+        elif re.search(get_pattern('events', lang)[1], chat):
+            return lang, 'personalchat'
+    return 'not_supported', ''
 
 def clean_message(x):
     """Remove newline, emoji, link, mention, and other non text object from message."""
@@ -154,7 +156,7 @@ def enrich(df, lang):
 def parse(chat):
     """Parse exported chat and define date, contact, message for each message."""
     chat = chat.decode('utf-8')
-    lang = detect_language(chat)
+    lang, chat_type = detect_language(chat)
 
     if lang == 'not_supported':
         df = pd.DataFrame()
@@ -180,38 +182,41 @@ def parse(chat):
                 'contact': contact,
                 'message': msg.encode('unicode_escape').decode()})
         df = pd.DataFrame(data)
-    return df, lang
+    return df, chat_type, lang
 
 def load_parsed_data(input_string, input_type, save=True):
     """Grab chat data, parse, enrich, and store information to client side."""
     if input_type == 'upload':
-        df, lang = parse(input_string)
+        df, chat_type, lang = parse(input_string)
         url = db.generate_url(10, unique=save)
         if save and not df.empty:
-            url = db.add_chat(df, lang, url)
+            url = db.add_chat(df, lang, chat_type, url)
     elif input_type == 'url':
         url = input_string
-        df, lang = db.get_chat(url)
+        df, chat_type, lang = db.get_chat(url)
 
     if lang in ['not_supported', 'not_found']:
         return lang, {'data': ''}
 
     df = enrich(df, lang)
-    # TODO: support for both private & group chat
-    group_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
-    chat_name = df[(df.category == 'Event') & (df.event_type.isin(['created group', 'changed the subject from']))].tail(1)['event_target']
     users = sorted(filter(lambda x: pd.notna(x), df.contact.unique().tolist()))
-    df = df.drop(group_created.index)
+    if chat_type == 'groupchat':
+        chat_name = encode_emoji(df[(df.category == 'Event') & (df.event_type.isin(['created group', 'changed the subject from']))].tail(1)['event_target'].values[0])
+        chat_created = df[(df.category == 'Event') & (df.event_type == 'created group')]
+        df = df.drop(chat_created.index[0])
+    elif chat_type == 'personalchat':
+        chat_name = ' and '.join(users)
+        chat_created = df[df.category != 'Event'].sort_values('datetime').head(1)
     df = df.drop(['message', 'clean_message'], axis=1)
     datasets = {
         'data': df.to_json(date_format='iso', orient='split'),
         'lang': lang,
         'users': users,
-        'chat_name': encode_emoji(chat_name.values[0]),
-        'chat_created_by': group_created['contact'].values[0],
-        'chat_created_at': group_created['datetime'].dt.strftime('%d %b %Y').values[0],
+        'chat_name': chat_name,
+        'chat_created_by': chat_created['contact'].values[0],
+        'chat_created_at': chat_created['datetime'].dt.strftime('%d %b %Y').values[0],
         'chat_min_date': df.datetime.min().strftime('%Y-%m-%d'),
         'chat_max_date': df.datetime.max().strftime('%Y-%m-%d')
     }
     # TODO: create method to check Series.values is empty, to avoid IndexError: index 0 is out of bounds for axis 0 with size 0
-    return '/groupchat/' + url, json.dumps(datasets)
+    return f'/{chat_type}/' + url, json.dumps(datasets)

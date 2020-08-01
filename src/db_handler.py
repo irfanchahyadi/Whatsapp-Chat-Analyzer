@@ -42,20 +42,20 @@ def execute(sql, params=None, result_back=True):
 
 def get_chat_id(url):
     """Return chat id from specific url key."""
-    return execute("select id, lang from uploaded where url=%s;", (url))
+    return execute("select id, chat_type, lang from uploaded where url=%s;", (url))
 
 def get_chat(url):
     """Return chat data from specific url key."""
     chat_id = get_chat_id(url)
     if len(chat_id) > 0:
-        return get_df(f'select * from chat where id_chat={chat_id[0][0]};'), chat_id[0][1]
+        return get_df(f'select * from chat where id_chat={chat_id[0][0]};'), chat_id[0][1], chat_id[0][2]
     else:
         return pd.DataFrame(), 'not_found'
 
-def add_chat(df, lang, url):
+def add_chat(df, lang, chat_type, url):
     """Save chat history into database."""
-    sql = "insert into uploaded (datetime, lang, url) values (%s, %s, %s) returning id;"
-    id_chat = execute(sql, (datetime.now(), lang, url))[0][0]
+    sql = "insert into uploaded (datetime, chat_type, url, lang) values (%s, %s, %s, %s) returning id;"
+    id_chat = execute(sql, (datetime.now(), chat_type, url, lang))[0][0]
     df.insert(0, 'id_chat', id_chat)
     db_engine = get_engine()
     df.to_sql('chat', db_engine, if_exists='append')
@@ -66,6 +66,6 @@ def reset_chat():
     sql_script = [
         "drop table if exists uploaded;",
         "drop table if exists chat;",
-        "create table uploaded (id serial primary key, datetime timestamp, url varchar, lang varchar);"]
+        "create table uploaded (id serial primary key, datetime timestamp, chat_type varchar, url varchar, lang varchar);"]
     for sql in sql_script:
         execute(sql, result_back=False)
