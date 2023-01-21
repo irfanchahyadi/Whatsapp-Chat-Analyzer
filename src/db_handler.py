@@ -1,6 +1,7 @@
 import random, string
 from datetime import datetime
 from sqlalchemy import create_engine
+import sqlite3
 import pandas as pd
 from src.settings import DATABASE_URL
 
@@ -42,7 +43,7 @@ def execute(sql, params=None, result_back=True):
 
 def get_chat_id(url):
     """Return chat id from specific url key."""
-    return execute("select id, chat_type, lang from uploaded where url=%s;", (url))
+    return execute("select id, chat_type, lang from uploaded where url=?;", (url,))
 
 def get_chat(url):
     """Return chat data from specific url key."""
@@ -66,6 +67,10 @@ def reset_chat():
     sql_script = [
         "drop table if exists uploaded;",
         "drop table if exists chat;",
-        "create table uploaded (id serial primary key, datetime timestamp, chat_type varchar, url varchar, lang varchar);"]
+        "create table uploaded (id serial primary key, datetime timestamp, chat_type varchar, url varchar, lang varchar);",
+        "create table chat (id serial primary key, id_chat integer, datetime timestamp, contact varchar, message varchar);",
+        "insert into uploaded (id, datetime, chat_type, url, lang) values(1, '2022-01-01 00:00:00', 'groupchat', 'DEMO', 'eng');",
+        "insert into chat (id, id_chat, datetime, contact, message) values(1, 1, '2022-01-01 00:00:00', 'irfan', 'encrypted');",
+    ]
     for sql in sql_script:
         execute(sql, result_back=False)

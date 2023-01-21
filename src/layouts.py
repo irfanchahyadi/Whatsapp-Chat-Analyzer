@@ -1,5 +1,5 @@
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 import dash_cytoscape as cyto
@@ -26,7 +26,7 @@ def add_help(inside, tooltip_id=None, hide=True):
     result = html.Span([
         inside,
         html.I(className='fas fa-question-circle fa-sm text-muted', id='help-' + tooltip_id, style={'visibility': visibility}),
-        dbc.Tooltip(settings.TOOLTIPS[tooltip_id], id='tt-' + tooltip_id, target='help-' + tooltip_id, hide_arrow=hide, style={'visibility': visibility, 'z-index': 9999})
+        dbc.Tooltip(settings.TOOLTIPS[tooltip_id], id='tt-' + tooltip_id, target='help-' + tooltip_id, style={'visibility': visibility, 'z-index': 9999})
     ])
     return result
 
@@ -106,7 +106,7 @@ groupchat = html.Div([
                     html.A(
                         dbc.Col(html.Img(src=settings.LOGO, height="45px")), href='/'),
                     dbc.Col(dbc.NavbarBrand(id='navbar-brand', className='ml-2'), style={'margin-left': '10px'})],
-                    align='center', no_gutters=True)], fixed='top', className='wa-navbar')]),
+                    align='center')], fixed='top', className='wa-navbar')]),
 
         dbc.Col([
             dbc.Row([
@@ -242,7 +242,7 @@ personalchat = html.Div([
                     html.A(
                         dbc.Col(html.Img(src=settings.LOGO, height="45px")), href='/'),
                     dbc.Col(dbc.NavbarBrand(id='navbar-brand2', className='ml-2'), style={'margin-left': '10px'})],
-                    align='center', no_gutters=True)], fixed='top', className='wa-navbar')]),
+                    align='center')], fixed='top', className='wa-navbar')]),
 
         dbc.Col([
             dbc.Row([

@@ -1,8 +1,8 @@
 import os, dotenv
 
 dotenv.load_dotenv()
-DATABASE_URL = os.getenv('DATABASE_URL')
-GA_TRACKING_ID = os.getenv('GA_TRACKING_ID')
+DATABASE_URL = 'sqlite:///src/wca.db'
+GA_TRACKING_ID = 'UA-41298121-2'
 APP_NAME = 'Whatsapp Chat Analyzer'
 LOGO = '/assets/logo.png'
 FONT_AWESOME = 'https://use.fontawesome.com/releases/v5.10.2/css/all.css'
