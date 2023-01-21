@@ -7,7 +7,7 @@ dash-html-components==1.0.2
 dash-renderer==1.2.4
 dash-table==4.6.1
 gunicorn==20.0.4
-pandas==1.0.1
+pandas
 plotly==4.5.4
 psycopg2==2.8.4
 python-dotenv==0.12.0
